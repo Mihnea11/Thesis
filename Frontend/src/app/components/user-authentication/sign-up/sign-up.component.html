@@ -1,0 +1,76 @@
+<div class="register-wrapper">  
+  <div class="register-container">
+    <h2>Cause IT</h2>
+    <p>Create an account and access all available features!</p>
+    <form (ngSubmit)="onSubmit()">
+      <div class="inline-fields-container">
+        <div class="input-wrapper">
+          <input type="text" id="name" required [(ngModel)]="name" name="name"
+                  [class.error]="hasError && name === ''">
+          <label for="name" class="placeholder">First name</label>
+        </div>
+
+        <div class="input-wrapper">
+            <input type="text" id="lastname" required [(ngModel)]="lastname" name="lastname"
+                    [class.error]="hasError && lastname === ''">
+            <label for="lastname" class="placeholder">Last name</label>
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <input type="text" id="email" required [(ngModel)]="email" name="email"
+                [class.error]="hasError && lastname === ''">
+        <label for="email" class="placeholder">Email</label>
+      </div>
+      
+      <div class="inline-fields-container">
+        <div class="input-wrapper">
+          <input [type]="hidePassword ? 'password' : 'text'" id="password" required [(ngModel)]="password" name="password" [class.error]="hasError && password === ''">
+          <label for="password" class="placeholder">Password</label>
+          <button type="button" (click)="hidePassword = !hidePassword" class="view-password-btn">
+            <img [src]="hidePassword ? '../../../assets/icons/closed-eye.svg' : '../../../assets/icons/open-eye.svg'" alt="View Password">
+          </button>
+        </div>
+  
+        <div class="input-wrapper">
+            <input [type]="hideConfirmPassword ? 'password' : 'text'" id="confirmPassword" required [(ngModel)]="confirmPassword" name="confirmPassword" [class.error]="hasError && confirmPassword === ''">
+            <label for="confirmPassword" class="placeholder">Confirm Password</label>
+            <button type="button" (click)="hideConfirmPassword = !hideConfirmPassword" class="view-password-btn">
+              <img [src]="hideConfirmPassword ? '../../../assets/icons/closed-eye.svg' : '../../../assets/icons/open-eye.svg'" alt="View Password">
+            </button>
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <input [type]="'text'" 
+                id="specialisation" 
+                required 
+                [(ngModel)]="specialisation.name" 
+                name="specialisation" 
+                (input)="filterSpecialisations()"
+                (focus)="openDropdown=true"
+                (blur)="closeDropdown()"
+                [class.error]="hasError && confirmPassword === ''">
+        <label for="specialisation" class="placeholder">Specialisation</label>
+        <ul [class.dropdown-menu--visible]="openDropdown" [class.dropdown-menu--closing]="closingDropdown" class="dropdown-menu">
+          <li *ngFor="let spec of filteredSpecialisations" (click)="selectSpecialisation(spec)">
+            {{ spec.name }}
+          </li>
+        </ul>
+      </div>
+
+      <p *ngIf="hasError" class="error-message" [innerHTML]="errorMessage"></p>
+      <div *ngIf="!isLoading; else loading">
+        <button type="submit" class="register-btn">REGISTER</button>
+      </div>
+
+      <ng-template #loading>
+        <div class="spinner-container">
+          <div class="loading-spinner"></div>
+        </div>
+      </ng-template>
+    </form>
+    
+    <button class="signin-link" routerLink="/sign-in">Already have an account? Sign in</button>
+  </div>
+</div>

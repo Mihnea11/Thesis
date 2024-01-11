@@ -1,0 +1,56 @@
+<div class="toolbar-sidenav-container">
+  <div #toolbar class="custom-toolbar">
+    <div [class.open]="menuOpened" class="menu-button" (click)="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    
+      <div class="center-content">
+          <span class="toolbar-app-title">CauseIT</span>
+          <img src="../../../../assets/icons/app-logo.svg" alt="App Logo" class="toolbar-logo">
+      </div>
+
+      <div class="toolbar-right-content">
+          <div class="user-menu-trigger">
+              <img src="../../../../assets/icons/profile.svg" alt="Account" class="account-icon">
+              <div class="user-menu">
+                  <button class="menu-item" (click)="profile()">Profile</button>
+                  <button class="menu-item">Settings</button>
+                  <button class="menu-item" (click)="logout()">Logout</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <div #sidenav class="custom-sidenav" id="sidenav" [class.open]="menuOpened">    
+      <div class="sidenav-buttons">
+        <button class="sidenav-button" (click)="navigate('home')">
+            Home
+            <img src="../../../../assets/icons/home.svg" class="button-icon"/>
+        </button>
+
+        <button class="sidenav-button" (click)="navigate('upload-data')">
+            Upload data
+            <img src="../../../../assets/icons/upload.svg" class="button-icon"/>
+        </button>
+
+        <button class="sidenav-button" (click)="navigate('predictions')">
+            View predictions
+            <img src="../../../../assets/icons/prediction.svg" class="button-icon"/>
+        </button>
+
+        <button class="sidenav-button" (click)="navigate('knowledge-graph')">
+            Knowledge graph
+            <img src="../../../../assets/icons/knowledge-graph.svg" class="button-icon"/>
+        </button>
+      </div>
+  </div>
+
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

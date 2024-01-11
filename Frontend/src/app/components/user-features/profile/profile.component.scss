@@ -1,0 +1,93 @@
+@keyframes gradientShift {
+  0% { background-position: 100% 0%; }
+  50% { background-position: 0% 100%; }
+  100% { background-position: 100% 0%; }
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(45deg, #9a8cff, #8ca6db, #b2a1db);
+  background-size: 200% 200%;
+  animation: gradientShift 10s infinite;
+}
+
+.profile-card {
+  width: 50%;
+  max-width: 44rem;
+  background: white;
+  box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.card-header {
+  background: #673ab7;
+  color: white;
+  padding: 1.25rem;
+  position: relative;
+  text-align: center;
+}
+
+.profile-image-male, .profile-image-female {
+  background-size: cover;
+  height: 3.125rem;
+  width: 3.125rem;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.profile-image-male{
+  background-image: url('../../../../assets/images/MaleDoctor.png');
+}
+
+.profile-image-female{
+  background-image: url('../../../../assets/images/FemaleDoctor.png');
+}
+
+.left-avatar, .right-avatar {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.left-avatar {
+  left: 1.25rem;
+}
+
+.right-avatar {
+  right: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.625rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.info-label {
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.info-value {
+  font-size: 1.2rem;
+  color: #555;
+  text-align: right;
+}

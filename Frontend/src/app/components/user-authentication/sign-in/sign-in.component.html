@@ -1,0 +1,40 @@
+<div class="login-wrapper">
+  <div class="login-container">
+    <h2>Cause IT</h2>
+    <p>Welcome back! Please enter your details</p>
+    <form (ngSubmit)="onSubmit()">
+      <div class="input-wrapper">
+        <input type="text" id="email" required [(ngModel)]="email" name="email"
+                [class.error]="hasError && email === ''">
+        <label for="email" class="placeholder">Email</label>
+      </div>
+
+      <div class="input-wrapper">
+        <input [type]="hidePassword ? 'password' : 'text'" id="password" required [(ngModel)]="password" name="password" [class.error]="hasError && password === ''">
+        <label for="password" class="placeholder">Password</label>
+        <button type="button" (click)="hidePassword = !hidePassword" class="view-password-btn">
+          <img [src]="hidePassword ? '../../../assets/icons/closed-eye.svg' : '../../../assets/icons/open-eye.svg'" alt="View Password">
+        </button>
+      </div>
+
+      <div class="checkbox-container">
+        <input class="checkbox-flip" type="checkbox" id="check-flip" [(ngModel)]="rememberMe" name="rememberMe">
+        <label for="check-flip"><span></span>Remember Me</label>
+      </div>
+
+      <p *ngIf="hasError" class="error-message">{{ errorMessage }}</p>
+      <div *ngIf="!isLoading; else loading">
+        <button type="submit" class="login-btn">LOGIN</button>
+      </div>
+      
+      <ng-template #loading>
+        <div class="spinner-container">
+          <div class="loading-spinner"></div>
+        </div>
+      </ng-template>
+    </form>      
+    
+    <button class="signup-link" routerLink="/sign-up">Create an account</button>
+  </div>
+</div>
+  
