@@ -1,4 +1,5 @@
 import { Component, HostListener, Renderer2 } from '@angular/core';
+import { Label } from 'src/app/models/label';
 
 @Component({
   selector: 'app-upload-data',
@@ -6,12 +7,18 @@ import { Component, HostListener, Renderer2 } from '@angular/core';
   styleUrls: ['./upload-data.component.scss']
 })
 export class UploadDataComponent {
-  regularData: File[] = []; // This will hold the files for regular data
-  explanatoryData: File | null = null; // This will hold the single file for explanatory data
+  regularData: File[] = [];
+  explanatoryData: File | null = null;
+
   isDragOverRegular: boolean = false;
   isDragOverExplanatory: boolean = false;
+  openDropdown: boolean = false;
+  closingDropdown: boolean = false;
 
-  // Regular data drag events
+  labels: Label[] = []
+  filteredLabels: Label[] = []
+  selectedLabel!: Label;
+
   onDragOverRegular(event: DragEvent): void {
     event.preventDefault();
     this.isDragOverRegular = true;
@@ -24,10 +31,9 @@ export class UploadDataComponent {
 
   onFileDroppedRegular(event: any): void {
     this.regularData.push(...event.addedFiles);
-    this.isDragOverRegular = false; // Reset the drag over state
+    this.isDragOverRegular = false;
   }
 
-  // Explanatory data drag events
   onDragOverExplanatory(event: DragEvent): void {
     event.preventDefault();
     this.isDragOverExplanatory = true;
@@ -42,7 +48,19 @@ export class UploadDataComponent {
     if (event.addedFiles.length > 0) {
       this.explanatoryData = event.addedFiles[0];
     }
-    this.isDragOverExplanatory = false; // Reset the drag over state
+    this.isDragOverExplanatory = false;
+  }
+
+  filterLabels(): void {
+
+  }
+
+  selectLabel(label: Label): void {
+
+  }
+
+  closeDropdown(): void {
+
   }
 
   // Implement the logic to handle the file upload to your server

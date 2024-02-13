@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ev93+HvdqttUFvymGVjiFABMIH2rhCeE27NRIk3TBuu1T0PiBNkBd05cyjyrRM1WakM8QiaGSZZx+QJpbime4A==",
+  "dgSpecHash": "T41W7RcGuxdlLpITk3QueUafkhSh/Fge18VdcyORWwAl4J4TzdNt/xlT4skcABbbb264TOORbdT4uyUbua1SYQ==",
   "success": true,
-  "projectFilePath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge\\Bridge.csproj",
+  "projectFilePath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\z004nwxe\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",
     "C:\\Users\\z004nwxe\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",

@@ -1,4 +1,21 @@
 <div class="container">
+  <div class="label-wrapper">
+    <input [type]="'text'" 
+            id="label" 
+            required 
+            [(ngModel)]="selectedLabel" 
+            name="label" 
+            (input)="filterLabels()"
+            (focus)="openDropdown=true"
+            (blur)="closeDropdown()">
+    <label for="label" class="placeholder">Select a label for your data</label>
+    <ul [class.dropdown-menu--visible]="openDropdown" [class.dropdown-menu--closing]="closingDropdown" class="dropdown-menu">
+      <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
+        {{ currentLabel }}
+      </li>
+    </ul>
+  </div>
+  
   <div class="upload-area">
     <h2>Regular Data</h2>
     <ngx-dropzone (change)="onFileDroppedRegular($event)" 

@@ -1517,11 +1517,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge\\Bridge.csproj",
+      "projectUniqueName": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
       "projectName": "Bridge",
-      "projectPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge\\Bridge.csproj",
+      "projectPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
       "packagesPath": "C:\\Users\\z004nwxe\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge\\obj\\",
+      "outputPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
