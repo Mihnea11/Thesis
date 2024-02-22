@@ -1,3 +1,7 @@
+<div class="main-title">
+  <h1>Upload Your Data</h1>
+</div>
+
 <div class="container">
   <div class="label-wrapper">
     <input [type]="'text'" 
@@ -17,22 +21,38 @@
   </div>
   
   <div class="upload-area">
-    <h2>Regular Data</h2>
-    <ngx-dropzone (change)="onFileDroppedRegular($event)" 
+    <h2>
+      Regular Data
+      <span class="info-icon">i
+        <span class="tooltip-content">Upload files containing medical data for patients.</span>
+      </span>
+    </h2>
+    <ngx-dropzone [accept]="'.csv'"
+                  [maxFileSize]="524288000"
+                  (change)="onFileDroppedRegular($event)" 
                   [class.file-over]="isDragOverRegular" 
                   (dragover)="onDragOverRegular($event)" 
                   (dragleave)="onDragLeaveRegular($event)"
                   (drop)="onFileDroppedRegular($event)">
       <ngx-dropzone-label>Drag & drop your files here or browse</ngx-dropzone-label>
     </ngx-dropzone>
+    <p class="max-size-info">Maximum upload size: 500 MB</p>
     <ul *ngIf="regularData.length > 0">
       <li *ngFor="let file of regularData">{{ file.name }}</li>
     </ul>
   </div>
 
   <div class="upload-area">
-    <h2>Explanatory Data</h2>
-    <ngx-dropzone [multiple]="false" 
+    <h2>
+      Explanatory Data
+      <span class="info-icon">i
+        <span class="tooltip-content">Upload a CSV file explaining column names, especially for encoded data or abbreviations.</span>
+      </span>
+    </h2>
+    
+    <ngx-dropzone [accept]="'.csv'"
+                  [maxFileSize]="524288000"
+                  [multiple]="false" 
                   (change)="onFileDroppedExplanatory($event)" 
                   [class.file-over]="isDragOverExplanatory" 
                   (dragover)="onDragOverExplanatory($event)" 
@@ -40,6 +60,7 @@
                   (drop)="onFileDroppedExplanatory($event)">
       <ngx-dropzone-label>Drag & drop your file here or browse</ngx-dropzone-label>
     </ngx-dropzone>
+    <p class="max-size-info">Maximum file size: 500 MB</p>
     <div *ngIf="explanatoryData">
       <p>{{ explanatoryData.name }}</p>
     </div>

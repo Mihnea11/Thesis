@@ -2,13 +2,20 @@
   box-sizing: border-box;
 }
 
+.main-title h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: rgb(0, 123, 255);
+  margin-bottom: 1rem;
+}
+
 .container {
-  width: 50%;
+  width: 80%;
   margin: auto;
   gap: 1.25rem;
   border-radius: 0.5rem;
   overflow-y: auto;
-  max-height: 90vh;
+  max-height: 80vh;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(0.625rem);
   box-shadow: 0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.15);
@@ -38,9 +45,18 @@
   transition: transform 0.3s ease;
 
   h2 {
+    display: flex;
+    align-items: center;
     font-size: 1.5rem;
     color: rgb(0, 123, 255);
   }
+}
+
+.max-size-info {
+  font-size: 0.8em;
+  color: #666;
+  text-align: center;
+  margin-top: 0.5em;
 }
 
 ngx-dropzone {
@@ -169,16 +185,12 @@ ul {
 }
 
 .label-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   position: relative;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  
+
   input {
-    width: 50%;
+    width: 100%;
     padding: 1rem;
     background: rgba(35, 35, 35, 1);
     border: 0.2rem solid rgb(128, 128, 128);
@@ -198,8 +210,9 @@ ul {
 
   .placeholder {
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
     transition: all 0.2s ease-in;
     background-color: rgba(35, 35, 35, 1);
     padding: 0 0.4rem;
@@ -207,8 +220,124 @@ ul {
   }
 
   input:is(:focus, :valid) + .placeholder {
-    transform: translate(-50%, calc(-100% - 1.2rem));
+    transform: translateY(calc(-100% - 1.2rem)) translateX(-0.8rem);
     font-size: 1rem;
     color: rgb(0, 136, 255);
+  }
+}
+
+.dropdown-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  background: rgba(35, 35, 35, 1);
+  border: 0.125rem solid rgb(128, 128, 128);
+  border-top: none;
+  border-radius: 0 0 0.6rem 0.6rem;
+  max-height: 12.5rem;
+  overflow-y: auto;
+  z-index: 10000;
+  transform-origin: top center;
+  display: none;
+}
+
+.dropdown-menu li {
+  padding: 0.625rem; 
+  margin-bottom: 0.5rem;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f2f2f2;
+  color: rgb(18, 18, 18);
+}
+
+.dropdown-menu--visible {
+  display: block;
+  animation: rotateX 300ms ease-in-out;
+}
+
+.dropdown-menu--closing {
+  animation: rotateXClose 300ms ease-in-out;
+}
+
+.placeholder {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease-in;
+  background-color: rgba(35, 35, 35, 1);
+  padding: 0 0.4rem;
+  color: rgb(128, 128, 128);
+}
+
+input:is(:focus, :valid) + .placeholder {
+  transform: translate(-50%, calc(-100% - 1.2rem));
+  font-size: 1rem;
+  color: rgb(0, 136, 255);
+}
+
+.info-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.25em;
+  height: 1.25em;
+  padding: 0.7em;
+  margin-left: 0.625em;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: rgb(255, 255, 255);
+  font-size: 0.75em;
+  cursor: pointer;
+  position: relative;
+}
+
+.tooltip-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  min-width: 15em;
+  max-width: 25em;
+  font-size: 0.8em;
+  background-color: rgb(42, 42, 42);
+  color: white;
+  text-align: left;
+  border-radius: 0.375em;
+  padding: 0.3125em;
+  box-shadow: 0 0 0.625em rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.info-icon:hover .tooltip-content {
+  display: block;
+}
+
+@keyframes rotateX {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+  50% {
+    transform: rotateX(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes rotateXClose {
+  0% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotateX(90deg);
   }
 }

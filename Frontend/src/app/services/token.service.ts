@@ -8,12 +8,12 @@ import { AccessToken } from '../models/access-token';
   providedIn: 'root'
 })
 export class TokenService {
-  private tokenUrl = 'https://localhost:7010/Token';
+  private apiUrl = 'https://localhost:7010/Token';
 
   constructor(private http: HttpClient) { }
 
   validateAccessToken(tokenModel: AccessToken): Observable<HttpResponse<UserInfo>> {
-    return this.http.post<UserInfo>(`${this.tokenUrl}/ValidateToken`, tokenModel, {
+    return this.http.post<UserInfo>(`${this.apiUrl}/ValidateToken`, tokenModel, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       observe: 'response'
     });
@@ -21,12 +21,12 @@ export class TokenService {
   
   revokeToken(): Observable<any> {
     this.clearAccessToken();
-    return this.http.post(`${this.tokenUrl}/Revoke`, {}, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/Revoke`, {}, { withCredentials: true });
   }
 
   refreshAccessToken(): Observable<HttpResponse<AccessToken>> {
     this.clearAccessToken();
-    return this.http.post<AccessToken>(`${this.tokenUrl}/Refresh`, {}, {
+    return this.http.post<AccessToken>(`${this.apiUrl}/Refresh`, {}, {
       withCredentials: true,
       observe: 'response'
     }).pipe(

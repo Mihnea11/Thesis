@@ -67,7 +67,7 @@ namespace Bridge.Controllers
             }
         }
 
-        [HttpGet("by {name}")]
+        [HttpGet("By {name}")]
         public async Task<IActionResult> GetSpecialisationByName(string name)
         {
             try

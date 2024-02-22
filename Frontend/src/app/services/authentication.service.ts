@@ -9,7 +9,7 @@ import { TokenService } from './token.service';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private authenticationUrl = 'https://localhost:7010/Authentication';
+  private apiUrl = 'https://localhost:7010/Authentication';
 
   constructor(private http: HttpClient, private tokenService: TokenService) {}
 
@@ -20,11 +20,11 @@ export class AuthenticationService {
       })
     };
     
-    return this.http.post(`${this.authenticationUrl}/Register`, user, httpOptions);
+    return this.http.post(`${this.apiUrl}/Register`, user, httpOptions);
   }
 
   loginUser(credentials: UserCredentials, rememberMe: boolean): Observable<any> {
-    const url = `${this.authenticationUrl}/Login?rememberMe=${rememberMe}`;
+    const url = `${this.apiUrl}/Login?rememberMe=${rememberMe}`;
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       withCredentials: true

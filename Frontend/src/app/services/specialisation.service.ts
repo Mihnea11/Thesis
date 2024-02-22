@@ -20,7 +20,7 @@ export class SpecialisationService {
   }
 
   getSpecialisationByName(name: string): Observable<Specialisation> {
-    return this.http.get<Specialisation>(`${this.apiUrl}/by ${name}`);
+    return this.http.get<Specialisation>(`${this.apiUrl}/By ${name}`);
   }
 
   getAllSpecialisations(): Observable<Specialisation[]> {
