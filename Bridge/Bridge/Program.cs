@@ -1,18 +1,25 @@
 using Bridge.Contexts;
+using Bridge.Hubs;
 using Bridge.Services;
+using Bridge.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 builder.Services.AddSingleton<MongoDBContext>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<SpecialisationService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<NotificationService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "AllowSpecificOrigin",
@@ -48,6 +55,21 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notifications"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 var app = builder.Build();
@@ -62,6 +84,8 @@ app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/notifications");
 
 app.MapControllers();
 

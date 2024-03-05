@@ -97,6 +97,104 @@
         .toolbar-right-content {
             display: flex;
             align-items: center;
+ 
+            .notification-trigger {
+                cursor: pointer;
+                margin-top: 0.31rem;
+                margin-right: 1.25rem;
+
+                position: relative;
+
+                &:hover .notification-dropdown {
+                    display: block;
+                }
+
+                .notification-icon {
+                    height: 2rem;
+                    width: auto;
+
+                    transition: transform 0.3s ease-in-out;
+                    &:hover {
+                        transform: scale(1.1);
+                    }
+                }
+
+                .notification-dropdown {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: rgba(50, 50, 50, 1);
+                    border-radius: 0.313rem;
+                    padding: 0.5rem;
+                    min-width: 15rem;
+                    max-height: 20rem;
+                    overflow-y: auto;
+
+                    scrollbar-width: thin;
+                    scrollbar-color: rgb(107, 107, 107) rgb(46, 46, 46);
+
+                    &::-webkit-scrollbar {
+                        width: 0.75rem;
+                        background-color: rgb(46, 46, 46);
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background-color: rgb(107, 107, 107);
+                        border-radius: 0.375rem;
+                        border: 0.1875rem solid rgb(46, 46, 46);
+                    }
+
+                    &::-webkit-scrollbar-thumb:hover {
+                        background-color: rgb(149, 149, 149);
+  }
+                    
+                    p {
+                      color: white;
+                      margin: 0;
+                    }
+                  }
+
+                .notification-card {
+                    background-color: rgba(50, 50, 50, 1);
+                    border: 0.1rem solid rgb(0, 136, 255);
+                    border-radius: 0.25rem;
+                    margin-bottom: 0.65rem;
+                    position: relative;
+                    padding: 0.65rem;
+                    display: flex;
+                    flex-direction: column;
+                }
+                  
+                .close-btn {
+                    position: absolute;
+                    top: 0.3rem;
+                    right: 0.3rem;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    padding: 0.3rem;
+                    font-size: 1rem;
+                    color: red;
+                    transition: color 0.3s ease, transform 0.3s ease;
+
+                    &:hover {
+                        color: darkred;
+                        transform: scale(1.15);
+                    }
+                }
+                  
+                .notification-content {
+                    margin-bottom: 0.62rem;
+                }
+                  
+                .notification-timestamp {
+                    margin-top: auto;
+                    text-align: right;
+                    font-size: 0.8em;
+                    color: rgb(102, 102, 102);
+                }
+            }
 
             .user-menu-trigger {
                 display: flex;
@@ -209,68 +307,21 @@
     .toolbar-sidenav-container {
         .custom-toolbar {
             .menu-button {
-                width: 3rem; 
-                height: 2.25rem;
+                width: 2.25rem; 
+                height: 1.6875rem;
 
                 span {
-                    height: 0.45rem;
+                    height: 0.3375rem;
                 }
             }
 
             .center-content {
                 .toolbar-app-title {
-                    font-size: 1.75rem;
+                    font-size: 1.3125rem;
                 }
 
                 .toolbar-logo {
-                    height: 2.5rem;
-                }
-            }
-
-            .toolbar-right-content {
-                .user-menu-trigger {
-                    .account-icon {
-                        height: 1.75rem;
-                    }
-                }
-            }
-        }
-
-        .custom-sidenav {
-            width: 12.5rem;
-
-            .sidenav-buttons {
-                .sidenav-button {
-                    max-width: 10rem;
-                }
-            }
-        }
-
-        .content {
-            padding: 0.75rem;
-        }
-    }
-}
-
-@media (max-width: 30rem) {
-    .toolbar-sidenav-container {
-        .custom-toolbar {
-            .menu-button {
-                width: 2.5rem;
-                height: 2rem;
-
-                span {
-                    height: 0.4rem;
-                }
-            }
-
-            .center-content {
-                .toolbar-app-title {
-                    font-size: 1.5rem; 
-                }
-
-                .toolbar-logo {
-                    height: 2rem;
+                    height: 1.875rem;
                 }
             }
 
@@ -280,21 +331,130 @@
                         height: 1.5rem;
                     }
                 }
+
+                .notification-trigger {
+                    .notification-icon {
+                        height: 1.5rem;
+                    }
+
+                    .notification-dropdown {
+                        min-width: 12rem;
+                        max-height: 15rem;
+
+                        &::-webkit-scrollbar {
+                            width: 0.6rem;
+                        }
+                    }
+
+                    .notification-card {
+                        padding: 0.5rem;
+                        font-size: 0.875rem; /* Adjusted font size */
+                    }
+
+                    .close-btn {
+                        top: 0.25rem;
+                        right: 0.25rem;
+                        font-size: 0.875rem;
+                    }
+                }
             }
         }
 
         .custom-sidenav {
-            width: 10rem;
+            width: 9.375rem;
 
             .sidenav-buttons {
                 .sidenav-button {
-                    max-width: 9rem;
+                    padding: 0.5rem 0.9375rem;
+                    font-size: 0.875rem;
+                }
+
+                .button-icon { 
+                    width: 1rem;
                 }
             }
         }
 
         .content {
-            padding: 0.5rem;
+            padding: 0.5625rem;
+        }
+    }
+}
+
+@media (max-width: 30rem) {
+    .toolbar-sidenav-container {
+        .custom-toolbar {
+            .menu-button {
+                width: 1.875rem; 
+                height: 1.5rem;
+
+                span {
+                    height: 0.3rem;
+                }
+            }
+
+            .center-content {
+                .toolbar-app-title {
+                    font-size: 1.125rem;
+                }
+
+                .toolbar-logo {
+                    height: 1.5rem;
+                }
+            }
+
+            .toolbar-right-content {
+                .user-menu-trigger {
+                    .account-icon {
+                        height: 1.125rem;
+                    }
+                }
+
+                .notification-trigger {
+                    .notification-icon {
+                        height: 1.125rem;
+                    }
+
+                    .notification-dropdown {
+                        min-width: 9rem;
+                        max-height: 12rem;
+
+                        &::-webkit-scrollbar {
+                            width: 0.5rem;
+                        }
+                    }
+
+                    .notification-card {
+                        padding: 0.375rem;
+                        font-size: 0.75rem; /* Further adjusted font size */
+                    }
+
+                    .close-btn {
+                        top: 0.1875rem;
+                        right: 0.1875rem;
+                        font-size: 0.75rem;
+                    }
+                }
+            }
+        }
+
+        .custom-sidenav {
+            width: 7.5rem;
+
+            .sidenav-buttons {
+                .sidenav-button {
+                    padding: 0.375rem 0.75rem;
+                    font-size: 0.75rem;
+                }
+
+                .button-icon {
+                    width: 0.9rem;
+                }
+            }
+        }
+
+        .content {
+            padding: 0.375rem;
         }
     }
 }

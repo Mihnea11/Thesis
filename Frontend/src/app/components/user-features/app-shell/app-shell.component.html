@@ -15,14 +15,35 @@
       </div>
 
       <div class="toolbar-right-content">
-          <div class="user-menu-trigger">
-              <img src="../../../../assets/icons/profile.svg" alt="Account" class="account-icon">
-              <div class="user-menu">
-                  <button class="menu-item" (click)="profile()">Profile</button>
-                  <button class="menu-item">Settings</button>
-                  <button class="menu-item" (click)="logout()">Logout</button>
+        <div class="notification-trigger">
+          <img src="../../../../assets/icons/notification.svg" alt="No Notifications" class="notification-icon" *ngIf="!hasNotifications">
+          <img src="../../../../assets/icons/notification-alert.svg" alt="No Notifications" class="notification-icon" *ngIf="hasNotifications">
+          <div class="notification-dropdown">
+            <ng-container *ngIf="notifications.length; else noNotificationsTemplate">
+              <div *ngFor="let notification of notifications" class="notification-card">
+                <button class="close-btn" (click)="markAsRead(notification.id.toString())">&times;</button>
+                <div class="notification-content">
+                  <span>{{ notification.message }}</span>
+                </div>
+                <div class="notification-timestamp">
+                  {{ notification.timestamp | date: 'short' }}
+                </div>
               </div>
+            </ng-container>
+            <ng-template #noNotificationsTemplate>
+              <p>No new notifications</p>
+            </ng-template>
           </div>
+        </div>
+
+        <div class="user-menu-trigger">
+            <img src="../../../../assets/icons/profile.svg" alt="Account" class="account-icon">
+            <div class="user-menu">
+                <button class="menu-item" (click)="profile()">Profile</button>
+                <button class="menu-item">Settings</button>
+                <button class="menu-item" (click)="logout()">Logout</button>
+            </div>
+        </div>
       </div>
   </div>
   

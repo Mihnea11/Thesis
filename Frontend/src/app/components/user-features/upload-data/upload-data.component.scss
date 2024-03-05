@@ -126,68 +126,20 @@ ul {
   &:active {
     transform: translateY(0.125rem);
   }
-}
 
-@media (max-width: 48rem) {
-  .container {
-    width: 70%;
-    max-height: 80vh;
-    padding: 0.75rem;
-  }
-
-  .upload-area,
-  ngx-dropzone,
-  .actions {
-    padding: 0.75rem;
-  }
-
-  ngx-dropzone {
-    height: 9rem;
-    margin-bottom: 0.5rem;
-  }
-
-  ngx-dropzone-label,
-  .attach-button {
-    font-size: 0.875rem;
-  }
-
-  .attach-button {
-    padding: 0.5rem 1rem;
-  }
-}
-
-@media (max-width: 30rem) {
-  .container {
-    width: 90%;
-    max-height: 70vh;
-    padding: 0.5rem;
-  }
-
-  .upload-area,
-  ngx-dropzone,
-  .actions {
-    padding: 0.5rem;
-  }
-
-  ngx-dropzone {
-    height: 7rem;
-    margin-bottom: 0.4rem;
-  }
-
-  ngx-dropzone-label,
-  .attach-button {
-    font-size: 0.75rem;
-  }
-
-  .attach-button {
-    padding: 0.375rem 0.75rem;
+  &:disabled {
+    background-color: rgb(13, 61, 111);
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 }
 
 .label-wrapper {
   position: relative;
-  margin-top: 1rem;
+  margin: auto;
+  margin-top: 1.5rem;
   margin-bottom: 1rem;
+  max-width: 50%;
 
   input {
     width: 100%;
@@ -246,6 +198,7 @@ ul {
 .dropdown-menu li {
   padding: 0.625rem; 
   margin-bottom: 0.5rem;
+  border: none;
   color: rgb(255, 255, 255);
   cursor: pointer;
 }
@@ -317,6 +270,25 @@ input:is(:focus, :valid) + .placeholder {
   display: block;
 }
 
+.notification-card {
+  background: rgba(35, 35, 35, 1);
+  color: rgb(0, 123, 255);
+  border-radius: 0.5em;
+  padding: 1em;
+  box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 50%;
+  width: auto;
+  margin: 0 auto;
+  margin-top: 25vh;
+  
+  .warning-text {
+    color: #ff4136;
+    margin: 0.5em 0;
+    font-size: 1.2em;
+  }
+}
+
 @keyframes rotateX {
   0% {
     opacity: 0;
@@ -339,5 +311,109 @@ input:is(:focus, :valid) + .placeholder {
   100% {
     opacity: 0;
     transform: rotateX(90deg);
+  }
+}
+
+@media (max-width: 48rem) {
+  .main-title h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .container {
+    width: 90%;
+    max-height: 75vh;
+    padding: 1rem;
+  }
+
+  .upload-area h2 {
+    font-size: 1.25rem;
+  }
+
+  .max-size-info {
+    font-size: 0.75em;
+  }
+
+  ngx-dropzone {
+    height: 10rem;
+    margin-bottom: 0.5rem;
+  }
+
+  ngx-dropzone-label {
+    font-size: 0.875rem;
+  }
+
+  .actions .attach-button {
+    font-size: 1rem;
+    padding: 0.5rem 1.25rem;
+  }
+
+  .label-wrapper .placeholder {
+    font-size: 0.875rem;
+    padding: 0;
+  }
+
+  .label-wrapper input:is(:focus, :valid) + .placeholder {
+    font-size: 0.875rem;
+  }
+
+  .label-wrapper input {
+    padding: 0.75rem;
+  }
+
+  .dropdown-menu li {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .main-title h1 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .container {
+    width: 95%;
+    max-height: 70vh;
+    padding: 0.75rem;
+  }
+
+  .upload-area h2 {
+    font-size: 1rem;
+  }
+
+  .max-size-info {
+    font-size: 0.7em;
+  }
+
+  ngx-dropzone {
+    height: 8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  ngx-dropzone-label {
+    font-size: 0.75rem;
+  }
+
+  .actions .attach-button {
+    font-size: 0.875rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .label-wrapper .placeholder {
+    font-size: 0.75rem;
+    padding: 0;
+  }
+
+  .label-wrapper input:is(:focus, :valid) + .placeholder {
+    font-size: 0.75rem;
+  }
+
+  .label-wrapper input {
+    padding: 0.5rem;
+  }
+
+  .dropdown-menu li {
+    padding: 0.4rem;
   }
 }

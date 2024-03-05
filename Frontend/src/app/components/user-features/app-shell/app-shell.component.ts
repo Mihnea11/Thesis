@@ -1,5 +1,9 @@
 import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import * as signalR from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { Notification } from 'src/app/models/notification';
+import { NotificationService } from 'src/app/services/notification.service';
 import { TokenService } from 'src/app/services/token.service';
 import { UserInfo } from 'src/app/utility/user-info';
 
@@ -14,13 +18,20 @@ export class AppShellComponent implements OnInit, AfterViewInit {
 
   userInfo: UserInfo = {name: '', email: '', specialisationName: ''};
   menuOpened: boolean = false;
+  hubConnection: HubConnection | undefined;
+
+  hasNotifications: boolean = false;
+  notifications: Notification[] = [];
 
   constructor(private tokenService: TokenService, 
+              private notificationService: NotificationService,
               private router: Router,
               private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.checkAccessToken();
+    this.startSignalRConnection();
+    this.loadNotifications();
   }
 
   ngAfterViewInit(): void {
@@ -54,6 +65,16 @@ export class AppShellComponent implements OnInit, AfterViewInit {
         console.log(error);
         this.router.navigate(['sign-in']);
       }
+    });
+  }
+
+  markAsRead(notificationId: string) {
+    this.notificationService.markNotificationAsRead(notificationId).subscribe({
+      next: () => {
+        this.notifications = this.notifications.filter(notification => notification.id.toString() !== notificationId);
+        this.hasNotifications = this.notifications.length > 0;
+      },
+      error: (error) => console.error('Error marking notification as read:', error)
     });
   }
 
@@ -98,5 +119,34 @@ export class AppShellComponent implements OnInit, AfterViewInit {
       const toolbarHeight = this.toolbarElement.nativeElement.offsetHeight;
       this.renderer.setStyle(this.sidenavElement.nativeElement, 'top', `${toolbarHeight}px`);
     }
+  }
+
+  private loadNotifications(): void {
+    this.notificationService.getNotifications().subscribe({
+      next: (notifications) => {
+        this.notifications = notifications.filter(notification => !notification.isRead);
+        this.hasNotifications = this.notifications.length > 0;
+      },
+      error: (error) => console.error('Error fetching notifications', error)
+    });
+  }
+
+  private startSignalRConnection(): void {
+    const hubUrl = 'https://localhost:7010/notifications';
+
+    this.hubConnection = new HubConnectionBuilder()
+                        .withUrl(hubUrl, { accessTokenFactory: () => this.tokenService.getAccessToken() || '' })
+                        .configureLogging(signalR.LogLevel.Information)
+                        .withAutomaticReconnect()
+                        .build();
+
+    this.hubConnection.start()
+                      .then(() => console.log('Connection started'))
+                      .catch(err => console.error('Error while starting connection: ' + err));
+
+    this.hubConnection.on('ReceiveNotification', (message) => {
+      this.hasNotifications = true;
+      this.loadNotifications();
+    })
   }
 }

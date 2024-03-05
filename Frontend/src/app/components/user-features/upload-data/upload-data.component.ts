@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Query } from '@angular/core';
 import { FileService } from 'src/app/services/file.service';
 
 @Component({
@@ -22,7 +22,9 @@ export class UploadDataComponent implements OnInit {
 
   labels: string[] = []
   filteredLabels: string[] = []
-  selectedLabel!: string;
+  selectedLabel: string = '';
+
+  showUploadNotification: boolean = false;
 
   constructor(private fileService: FileService) {}
 
@@ -90,14 +92,35 @@ export class UploadDataComponent implements OnInit {
     }, 300);
   }
 
-  // Implement the logic to handle the file upload to your server
   attachFiles(): void {
-    console.log('Regular Data Files:', this.regularData);
-    if (this.explanatoryData) {
-      console.log('Explanatory Data File:', this.explanatoryData.name);
+    const totalFiles = this.regularData.length + (this.explanatoryData ? 1 : 0);
+
+    if (totalFiles > 0) {
+      this.showUploadNotification = true;
+
+      this.fileService.startUploadSession(totalFiles).subscribe({
+        next: (sessionResponse) => {
+          const sessionId = sessionResponse.sessionId;
+          console.log(sessionId)
+
+          this.regularData.forEach(file => {
+            this.fileService.uploadFiles(sessionId, file, this.selectedLabel).subscribe({
+              next: (response) => console.log('Upload successful', response),
+              error: (error) => console.log('Error uploading file', error)
+            });
+          });
+
+          if (this.explanatoryData) {
+            this.fileService.uploadFiles(sessionId, this.explanatoryData, this.selectedLabel, true).subscribe({
+              next: (response) => console.log('Upload successful for explanatory file', response),
+              error: (error) => console.error('Error uploading explanatory file', error)
+            })
+          }
+        },
+        error: (error) => console.error('Error starting upload session', error)
+      });
     }
-    // Implement upload logic here
-  }
+  }  
 
   private retrieveLabels(): void {
     this.fileService.getLabels().subscribe({

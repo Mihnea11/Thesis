@@ -2,7 +2,7 @@
   <h1>Upload Your Data</h1>
 </div>
 
-<div class="container">
+<div class="container" *ngIf="!showUploadNotification">
   <div class="label-wrapper">
     <input [type]="'text'" 
             id="label" 
@@ -67,6 +67,11 @@
   </div>
 
   <div class="actions">
-    <button class="attach-button" (click)="attachFiles()">Attach files</button>
+    <button class="attach-button" (click)="attachFiles()" [disabled]="selectedLabel.length === 0">Attach files</button>
   </div>
+</div>
+
+<div class="notification-card" *ngIf="showUploadNotification">
+  <h2>You will be notified once the files have been successfully uploaded</h2>
+  <p class="warning-text">Feel free to navigate through the website, but please DO NOT close this tab</p>
 </div>

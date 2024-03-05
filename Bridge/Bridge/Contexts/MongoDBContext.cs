@@ -16,6 +16,6 @@ namespace Bridge.Contexts
         public IMongoCollection<UserModel> Users => database.GetCollection<UserModel>("Users");
         public IMongoCollection<SpecialisationModel> Specialisations => database.GetCollection<SpecialisationModel>("Specialisations");
         public IMongoCollection<RefreshTokenModel> RefreshTokens => database.GetCollection<RefreshTokenModel>("RefreshTokens");
-
+        public IMongoCollection<NotificationModel> Notifications => database.GetCollection<NotificationModel>("Notifications");
     }
 }
