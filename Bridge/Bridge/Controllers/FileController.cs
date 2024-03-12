@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using Bridge.Hubs;
 using System.Collections.Concurrent;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Bridge.Controllers
 {
@@ -15,78 +16,44 @@ namespace Bridge.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly UserService userService;
+        private readonly MinioService minioService;
         private readonly NotificationService notificationService;
 
         private static ConcurrentDictionary<string, UploadSessionModel> uploadSessions = new ConcurrentDictionary<string, UploadSessionModel>();
 
-        public FileController(UserService userService, NotificationService notificationService)
+        public FileController(MinioService minioService, NotificationService notificationService)
         {
-            this.userService = userService;
+            this.minioService = minioService;
             this.notificationService = notificationService;
         }
 
         [HttpGet("Labels")]
         public async Task<IActionResult> GetLabels()
         {
-            var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
-            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized("No JWT token provided.");
+                return Unauthorized("JWT token is invalid or missing.");
             }
 
-            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("JWT token is empty.");
-            }
-
-            string userId;
             try
             {
-                userId = await GetUserIdFromToken(token);
+                var labels = await minioService.ListUserLabelsAsync("thesis-data", userId);
+                return Ok(labels);
             }
             catch (Exception ex)
             {
-                return Unauthorized($"Token error: {ex.Message}");
+                return StatusCode(500, $"Error retrieving labels: {ex.Message}");
             }
-
-            var rootPath = FileStorageHelper.GetDataStoragePath();
-            var userPath = Path.Combine(rootPath, userId);
-
-            if (!Directory.Exists(userPath))
-            {
-                return NotFound("User directory not found.");
-            }
-
-            var labels = Directory.GetDirectories(userPath).Select(Path.GetFileName).ToList();
-
-            return Ok(labels);
         }
 
         [HttpPost("StartUpload")]
         public async Task<IActionResult> StartUploadSession([FromBody] UploadSessionInitModel initModel)
         {
-            var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
-            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized("No JWT token provided.");
-            }
-
-            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("JWT token is empty.");
-            }
-
-            string userId;
-            try
-            {
-                userId = await GetUserIdFromToken(token);
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized($"Token error: {ex.Message}");
+                return Unauthorized("JWT token is invalid or missing.");
             }
 
             var sessionId = Guid.NewGuid().ToString();
@@ -103,49 +70,26 @@ namespace Bridge.Controllers
             return Ok(new { SessionId = sessionId });
         }
 
-        [HttpPost("UploadChunk/{sessionId}")]
-        public async Task<IActionResult> UploadChunk(string sessionId, [FromForm] FileChunkModel chunkModel)
+        [HttpPost("Upload/{sessionId}")]
+        public async Task<IActionResult> Upload(string sessionId, [FromForm] FileChunkModel chunkModel)
         {
-            if(!uploadSessions.TryGetValue(sessionId, out var uploadSession))
+            if (!uploadSessions.TryGetValue(sessionId, out var uploadSession))
             {
                 return NotFound("Session ID not found.");
             }
 
-            var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
-            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized("No JWT token provided.");
+                return Unauthorized("JWT token is invalid or missing.");
             }
 
-            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("JWT token is empty.");
-            }
+            var labelPath = chunkModel.FileName.Equals("explanatory_file.csv", StringComparison.OrdinalIgnoreCase) ? chunkModel.Label + "/explanatory_files" : chunkModel.Label;
+            var rootDirectory = Path.Combine(Path.GetTempPath(), "Uploads");
+            var tempDirectoryPath = Path.Combine(rootDirectory, userId, sessionId, labelPath);
+            Directory.CreateDirectory(tempDirectoryPath);
 
-            string userId;
-            try
-            {
-                userId = await GetUserIdFromToken(token);
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized($"Token error: {ex.Message}");
-            }
-
-            var rootPath = FileStorageHelper.GetDataStoragePath();
-            var userPath = Path.Combine(rootPath, userId);
-            var labelPath = Path.Combine(userPath, chunkModel.Label);
-
-            var targetDirPath = chunkModel.FileName.Equals("explanatory_file.csv", StringComparison.OrdinalIgnoreCase) ? Path.Combine(labelPath, "explanatory") : labelPath;
-            if (!Directory.Exists(targetDirPath))
-            {
-                Directory.CreateDirectory(targetDirPath);
-            }
-
-            var targetFilePath = Path.Combine(targetDirPath, chunkModel.FileName.Equals("explanatory_file.csv", StringComparison.OrdinalIgnoreCase) ? "explanatory_data.csv" : chunkModel.FileName);
-            var chunkFilePath = Path.Combine(targetDirPath, $"{chunkModel.FileName}.part{chunkModel.ChunkIndex}");
-
+            var chunkFilePath = Path.Combine(tempDirectoryPath, $"{chunkModel.FileName}.part{chunkModel.ChunkIndex}");
             try
             {
                 using (var stream = new FileStream(chunkFilePath, FileMode.Create))
@@ -155,41 +99,35 @@ namespace Bridge.Controllers
 
                 if (chunkModel.ChunkIndex == chunkModel.TotalChunks - 1)
                 {
-                    await ReassembleFile(targetFilePath, targetDirPath, chunkModel.FileName, chunkModel.TotalChunks);
-                    uploadSession.FilesUploaded++;
+                    var finalFilePath = Path.Combine(tempDirectoryPath, chunkModel.FileName);
 
+                    await ReassembleFile(finalFilePath, tempDirectoryPath, chunkModel.FileName, chunkModel.TotalChunks);
+                    await minioService.UploadFileAsync("thesis-data", $"{userId}/{labelPath}/{chunkModel.FileName}", finalFilePath);
+
+                    uploadSession.FilesUploaded++;
                     if (uploadSession.FilesUploaded == uploadSession.TotalFiles)
                     {
-                        NotificationModel notification = new()
-                        {
-                            Id = Guid.NewGuid(),
-                            UserId = userId,
-                            Message = "All files have been uploaded successfully."
-                        };
+                        await SendCompletionNotification(userId, sessionId, "All files have been uploaded successfully.");
 
-                        await notificationService.AddNotificationAsync(notification);
-                        if (uploadSessions.TryRemove(sessionId, out var removedSession))
-                        {
-                            Console.WriteLine($"Session {sessionId} completed and removed successfully.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Failed to remove session {sessionId}.");
-                        }
+                        await DeleteDirectoryAsync(rootDirectory);
                     }
                 }
+
+                return Ok(new { message = $"Chunk {chunkModel.ChunkIndex} of {chunkModel.FileName} uploaded successfully." });
             }
             catch (Exception ex)
             {
                 await SendErrorNotification(userId, sessionId, uploadSession.FilesUploaded, uploadSession.TotalFiles);
-
-                Console.WriteLine($"Error uploading chunk {chunkModel.ChunkIndex} of {chunkModel.FileName}: {ex.Message}");
-                return StatusCode(500, "An error occurred during the file upload.");
+                return StatusCode(500, $"An error occurred during the file upload: {ex.Message}");
             }
-
-            return Ok(new { message = $"Chunk {chunkModel.ChunkIndex} of {chunkModel.FileName} uploaded successfully" });
         }
+        private string GetUserIdFromToken()
+        {
+            var principal = HttpContext.User;
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            return userId;
+        }
 
         private async Task ReassembleFile(string targetFilePath, string directoryPath, string fileName, int totalChunks)
         {
@@ -207,29 +145,30 @@ namespace Bridge.Controllers
             }
         }
 
-        private async Task<string> GetUserIdFromToken(string token)
+        private async Task SendCompletionNotification(string userId, string sessionId, string message)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-
-            var emailClaim = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email)?.Value;
-            if (emailClaim == null)
+            NotificationModel notification = new()
             {
-                throw new ArgumentException("Token does not contain an email claim");
-            }
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Message = message
+            };
 
-            var user = await userService.GetUserByEmailAsync(emailClaim);
-            if (user == null)
+            await notificationService.AddNotificationAsync(notification);
+
+            if (uploadSessions.TryRemove(sessionId, out _))
             {
-                throw new InvalidOperationException("User not found");
+                Console.WriteLine($"Session {sessionId} completed and removed successfully.");
             }
-
-            return user.Id.ToString();
+            else
+            {
+                Console.WriteLine($"Failed to remove session {sessionId}.");
+            }
         }
 
         private async Task SendErrorNotification(string userId, string sessionId, int filesUploaded, int totalFiles)
         {
-            if (uploadSessions.TryRemove(sessionId, out var removedSession))
+            if (uploadSessions.TryRemove(sessionId, out _))
             {
                 Console.WriteLine($"Session {sessionId} canceled and removed successfully.");
             }
@@ -246,6 +185,34 @@ namespace Bridge.Controllers
             };
 
             await notificationService.AddNotificationAsync(notification);
+        }
+
+        private async Task DeleteDirectoryAsync(string path, int maxRetries = 5, int delayMilliseconds = 200)
+        {
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                try
+                {
+                    if (Directory.Exists(path))
+                    {
+                        Directory.Delete(path, true);
+                        Console.WriteLine($"Directory successfully deleted: {path}");
+                        return;
+                    }
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Attempt {attempt + 1}: IOException, could not delete directory {path}. Error: {ex.Message}");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine($"Attempt {attempt + 1}: UnauthorizedAccessException, could not delete directory {path}. Error: {ex.Message}");
+                }
+
+                await Task.Delay(delayMilliseconds);
+            }
+
+            Console.WriteLine($"Failed to delete directory after {maxRetries} attempts.");
         }
     }
 }

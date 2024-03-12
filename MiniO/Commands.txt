@@ -1,0 +1,1 @@
+Start server: minio.exe server --address :9500 "/MiniO Storage"

@@ -36,7 +36,7 @@ export class FileService {
         formData.append('TotalChunks', totalChunks.toString());
         formData.append('Label', label);
   
-        this.http.post(`${this.apiUrl}/UploadChunk/${sessionId}`, formData).subscribe({
+        this.http.post(`${this.apiUrl}/Upload/${sessionId}`, formData).subscribe({
           next: (response) => {
             observer.next(response);
             if (end < file.size) {

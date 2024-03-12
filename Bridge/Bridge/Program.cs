@@ -15,10 +15,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 builder.Services.AddSingleton<MongoDBContext>();
+builder.Services.AddSingleton<MinioContext>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<SpecialisationService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<MinioService>();
 
 builder.Services.AddCors(options =>
 {
