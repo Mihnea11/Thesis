@@ -1,0 +1,85 @@
+<div class="main-title">
+    <h1>Configure Your Model</h1>
+</div>
+
+<div class="container">
+    <form (ngSubmit)="onSubmit()">
+        <div class="section basic-settings">
+            <h2>Basic Settings</h2>
+            <div class="input-wrapper">
+                <input [type]="'text'" 
+                        id="label" 
+                        required 
+                        [(ngModel)]="selectedLabel" 
+                        name="label" 
+                        (input)="filterLabels()"
+                        (focus)="openLabelsDropdown=true"
+                        (blur)="closeDropdown('label')">
+                <label for="label" class="placeholder">Select a label for your data</label>
+                <ul [class.dropdown-menu--visible]="openLabelsDropdown" [class.dropdown-menu--closing]="closeLabelsDropdown" class="dropdown-menu">
+                  <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
+                    {{ currentLabel }}
+                  </li>
+                </ul>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="text" id="causalityColumn" required [(ngModel)]="causalityColumn" name="causalityColumn">
+                <label for="causalityColumn" class="placeholder">Causality Analysis Column</label>
+            </div>
+        </div>
+        
+        <div *ngIf="showExpertSettings" class="section expert-settings">
+            <h2>Expert Settings</h2>
+            <div class="input-wrapper">
+                <input [type]="'text'" 
+                        id="algorithmType" 
+                        required 
+                        [(ngModel)]="selectedAlgorithm" 
+                        name="algorithmType" 
+                        (focus)="openAlgorithmDropdown=true"
+                        (blur)="closeDropdown('algorithm')">
+                <label for="algorithmType" class="placeholder">Select algorithm type</label>
+                <ul [class.dropdown-menu--visible]="openAlgorithmDropdown" [class.dropdown-menu--closing]="closeAlgorithmDropdown" class="dropdown-menu">
+                  <li (click)="selectAlgorithm('First')">First</li>
+                  <li (click)="selectAlgorithm('Second')">Second</li>
+                </ul>
+            </div>
+        </div>
+
+        <div *ngIf="showCleaningSettings" class="section cleaning-options">
+            <h2>Cleaning Options</h2>
+            <div class="input-wrapper">
+                <select id="dataEncoding" class="select-field" formControlName="dataEncoding" required>
+                    <option value="" disabled selected hidden>Choose Data Encoding</option>
+                    <option value="encoding1">Encoding 1</option>
+                    <option value="encoding2">Encoding 2</option>
+                </select>
+                <label for="dataEncoding" class="placeholder">Data Encoding</label>
+            </div>
+            <div class="input-wrapper">
+                <input type="text" id="excludedColumns" required [(ngModel)]="excludedColumns" name="excludedColumns">
+                <label for="excludedColumns" class="placeholder">Excluded Columns from Cleaning</label>
+            </div>
+        </div>
+        
+
+        <div>
+            <div class="checkbox-container">
+                <input class="checkbox-flip" type="checkbox" id="toggleExpert" (change)="toggleExpertSettings()" formControlName="expertSettings">
+                <label for="toggleExpert"><span></span>Expert Settings</label>
+            </div>
+        </div>
+
+        <div>
+            <div class="checkbox-container">
+                <input class="checkbox-flip" type="checkbox" id="enableCleaning" (change)="toggleCleaningSettings()" name="enableCleaning">
+                <label for="enableCleaning"><span></span>Run Server-Defined Cleaning Process</label>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="submit-button">Submit</button>
+        </div>
+    </form>
+</div>

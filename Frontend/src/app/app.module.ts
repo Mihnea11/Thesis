@@ -26,12 +26,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppShellComponent } from './components/user-features/app-shell/app-shell.component';
 import { HomeComponent } from './components/user-features/home/home.component';
 import { UploadDataComponent } from './components/user-features/upload-data/upload-data.component';
-import { ViewPredictionsComponent } from './components/user-features/view-predictions/view-predictions.component';
-import { KnowledgeGraphComponent } from './components/user-features/knowledge-graph/knowledge-graph.component';
 import { ProfileComponent } from './components/user-features/profile/profile.component'; 
 import { MatListModule } from '@angular/material/list'; 
 import { MatProgressBarModule } from '@angular/material/progress-bar'; 
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { ModelConfigurationComponent } from './components/user-features/model-configuration/model-configuration.component';
+import { ResultsDisplayComponent } from './components/user-features/results-display/results-display.component';
 
 @NgModule({
   declarations: [
@@ -41,9 +41,9 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     AppShellComponent,
     HomeComponent,
     UploadDataComponent,
-    ViewPredictionsComponent,
-    KnowledgeGraphComponent,
-    ProfileComponent
+    ProfileComponent,
+    ModelConfigurationComponent,
+    ResultsDisplayComponent
   ],
   imports: [
     FormsModule,
