@@ -37,6 +37,7 @@
                         required 
                         [(ngModel)]="selectedAlgorithm" 
                         name="algorithmType" 
+                        (keydown)="$event.preventDefault()"
                         (focus)="openAlgorithmDropdown=true"
                         (blur)="closeDropdown('algorithm')">
                 <label for="algorithmType" class="placeholder">Select algorithm type</label>
@@ -50,12 +51,20 @@
         <div *ngIf="showCleaningSettings" class="section cleaning-options">
             <h2>Cleaning Options</h2>
             <div class="input-wrapper">
-                <select id="dataEncoding" class="select-field" formControlName="dataEncoding" required>
-                    <option value="" disabled selected hidden>Choose Data Encoding</option>
-                    <option value="encoding1">Encoding 1</option>
-                    <option value="encoding2">Encoding 2</option>
-                </select>
-                <label for="dataEncoding" class="placeholder">Data Encoding</label>
+                <input [type]="'text'" 
+                        id="encodingType" 
+                        required
+                        [(ngModel)]="selectedEncoding" 
+                        name="encodingType"
+                        (keydown)="$event.preventDefault()"
+                        (focus)="openEncodingDropdown=true"
+                        (blur)="closeDropdown('encoding')">
+                <label for="encodingType" class="placeholder">Select encoding type</label>
+                <ul [class.dropdown-menu--visible]="openEncodingDropdown" [class.dropdown-menu--closing]="closeEncodingDropdown" class="dropdown-menu">
+                  <li (click)="selectEncoding('Label Encoding')">Label Encoding</li>
+                  <li (click)="selectEncoding('One-Hot Encoding')">One-Hot Encoding</li>
+                  <li (click)="selectEncoding('Both')">Both</li>
+                </ul>
             </div>
             <div class="input-wrapper">
                 <input type="text" id="excludedColumns" required [(ngModel)]="excludedColumns" name="excludedColumns">

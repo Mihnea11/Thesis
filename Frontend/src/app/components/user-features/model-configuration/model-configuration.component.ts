@@ -17,12 +17,16 @@ export class ModelConfigurationComponent {
   closeLabelsDropdown: boolean = false;
   openAlgorithmDropdown: boolean = false;
   closeAlgorithmDropdown: boolean = false;
+  openEncodingDropdown: boolean = false;
+  closeEncodingDropdown: boolean = false;
 
   labels: string[] = []
   filteredLabels: string[] = []
   selectedLabel: string = '';
 
   selectedAlgorithm: string = '';
+
+  selectedEncoding: string = '';
 
   constructor(private fileService: FileService) { }
 
@@ -62,6 +66,11 @@ export class ModelConfigurationComponent {
     this.closeDropdown('algorithm');
   }
 
+  selectEncoding(encoding: string): void {
+    this.selectedEncoding = encoding;
+    this.closeDropdown('encoding')
+  }
+
   closeDropdown(option: string): void {
     option = option.toLowerCase();
 
@@ -80,6 +89,15 @@ export class ModelConfigurationComponent {
         setTimeout(() => {
           this.openAlgorithmDropdown = false;
           this.closeAlgorithmDropdown = false;
+        }, 300);
+        break;
+      }
+
+      case "encoding": {
+        this.closeEncodingDropdown = true;
+        setTimeout(() => {
+          this.openEncodingDropdown = false;
+          this.closeEncodingDropdown = false;
         }, 300);
         break;
       }
