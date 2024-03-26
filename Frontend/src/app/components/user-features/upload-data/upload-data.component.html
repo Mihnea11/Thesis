@@ -37,8 +37,11 @@
       <ngx-dropzone-label>Drag & drop your files here or browse</ngx-dropzone-label>
     </ngx-dropzone>
     <p class="max-size-info">Maximum upload size: 500 MB</p>
-    <ul *ngIf="regularData.length > 0">
-      <li *ngFor="let file of regularData">{{ file.name }}</li>
+    <ul *ngIf="regularData.length > 0" class="file-item">
+      <li *ngFor="let file of regularData; let i = index">
+        {{ file.name }}
+        <button class="remove-file-btn" (click)="removeRegularFile(i)">X</button>
+      </li>
     </ul>
   </div>
 
@@ -61,9 +64,12 @@
       <ngx-dropzone-label>Drag & drop your file here or browse</ngx-dropzone-label>
     </ngx-dropzone>
     <p class="max-size-info">Maximum file size: 500 MB</p>
-    <div *ngIf="explanatoryData">
-      <p>{{ explanatoryData.name }}</p>
-    </div>
+    <ul *ngIf="explanatoryData" class="file-item">
+      <li>
+        {{explanatoryData.name}}
+        <button class="remove-file-btn" (click)="removeExplanatoryFile()">X</button>
+      </li>
+    </ul>
   </div>
 
   <div class="actions">

@@ -289,6 +289,30 @@ input:is(:focus, :valid) + .placeholder {
   }
 }
 
+.file-item {
+  width: 100%;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .remove-file-btn {
+    color: red;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+  
+    &:hover {
+      color: darkred;
+      transform: scale(1.1);
+    }
+  }
+}
+
 @keyframes rotateX {
   0% {
     opacity: 0;

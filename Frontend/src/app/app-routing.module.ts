@@ -17,6 +17,7 @@ const routes: Routes = [
   {
     path: '', 
     component: AppShellComponent,
+    canActivate: [tokenGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'upload-data', component: UploadDataComponent},

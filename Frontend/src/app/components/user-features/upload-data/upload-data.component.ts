@@ -92,6 +92,14 @@ export class UploadDataComponent implements OnInit {
     }, 300);
   }
 
+  removeRegularFile(index: number): void {
+    this.regularData.splice(index, 1);
+  }
+
+  removeExplanatoryFile(): void {
+    this.explanatoryData = null;
+  }
+
   attachFiles(): void {
     const totalFiles = this.regularData.length + (this.explanatoryData ? 1 : 0);
 
