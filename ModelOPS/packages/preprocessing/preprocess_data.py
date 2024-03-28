@@ -7,9 +7,14 @@ from scale import standardize_columns, min_max_scale_columns
 from encode import one_hot_encode_columns, label_encode_columns
 
 
-def process_directory(input_directory: str, output_directory: str,
-                      encode_method: str = 'one_hot', scale_method: str = 'standardize',
-                      exclude_columns: Optional[List[str]] = None):
+def preprocess_files(input_directory: str,
+                     output_directory: str,
+                     patient_identifier: str,
+                     encode_method: str = 'one_hot',
+                     scale_method: str = 'standardize',
+                     row_threshold: float = 0.3,
+                     column_threshold: float = 0.5,
+                     exclude_columns: Optional[List[str]] = None):
     """
     Orchestrates the entire data preprocessing workflow: merging, cleaning, encoding, and scaling, with an option to exclude specific columns from being altered.
     Processes files by merging similar ones, then cleans, encodes, and scales the merged data, excluding specified columns,

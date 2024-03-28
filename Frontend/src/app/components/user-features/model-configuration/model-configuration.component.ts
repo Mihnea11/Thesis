@@ -7,26 +7,36 @@ import { FileService } from 'src/app/services/file.service';
   styleUrls: ['./model-configuration.component.scss']
 })
 export class ModelConfigurationComponent {
+  
+  //Cleaning options
+  patientIdentifier: string = '';
+  selectedEncoding: string = '';
+  rowThreshold: number = 50;
+  columnThreshold: number = 50;
+  showCleaningSettings: boolean = false;
+  openEncodingDropdown: boolean = false;
+  closeEncodingDropdown: boolean = false;
+
+  //Scaling options
+  selectedScaling: string = '';
+  openScalingDropdown: boolean = false;
+  closeScalingDropdown: boolean = false;
+
   causalityColumn: string = '';
   excludedColumns: string = '';
   
   showExpertSettings: boolean = false;
-  showCleaningSettings: boolean = false;
 
   openLabelsDropdown: boolean = false;
   closeLabelsDropdown: boolean = false;
   openAlgorithmDropdown: boolean = false;
   closeAlgorithmDropdown: boolean = false;
-  openEncodingDropdown: boolean = false;
-  closeEncodingDropdown: boolean = false;
 
   labels: string[] = []
   filteredLabels: string[] = []
   selectedLabel: string = '';
 
   selectedAlgorithm: string = '';
-
-  selectedEncoding: string = '';
 
   constructor(private fileService: FileService) { }
 
@@ -68,7 +78,12 @@ export class ModelConfigurationComponent {
 
   selectEncoding(encoding: string): void {
     this.selectedEncoding = encoding;
-    this.closeDropdown('encoding')
+    this.closeDropdown('encoding');
+  }
+
+  selectScaling(scaling: string): void {
+    this.selectedScaling = scaling;
+    this.closeDropdown('scaling');
   }
 
   closeDropdown(option: string): void {
@@ -99,6 +114,31 @@ export class ModelConfigurationComponent {
           this.openEncodingDropdown = false;
           this.closeEncodingDropdown = false;
         }, 300);
+        break;
+      }
+
+      case "scaling": {
+        this.closeScalingDropdown = true;
+        setTimeout(() => {
+          this.openScalingDropdown = false;
+          this.closeScalingDropdown = false;
+        }, 300);
+        break;
+      }
+    }
+  }
+
+  updateThreshold(event: Event, type: 'row' | 'column'): void {
+    let parsedValue = parseInt((event.target as HTMLInputElement).value, 10);
+    let value = isNaN(parsedValue) ? 0 : Math.max(0, Math.min(100, parsedValue));
+    
+    switch (type) {
+      case 'row': {
+        this.rowThreshold = value;
+        break;
+      }
+      case 'column': {
+        this.columnThreshold = value;
         break;
       }
     }
