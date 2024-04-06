@@ -14,19 +14,23 @@ def standardize_columns(data_frame: pd.DataFrame, columns_to_scale: Optional[Lis
 
     :return: DataFrame with specified columns standardized, excluding specified columns.
     """
-    if exclude_columns is None:
-        exclude_columns = []
+    try:
+        if exclude_columns is None:
+            exclude_columns = []
 
-    if columns_to_scale is None:
-        columns_to_scale = [col for col in data_frame.select_dtypes(include=['float64', 'int64']).columns.tolist() if
-                            col not in exclude_columns]
-    else:
-        columns_to_scale = [col for col in columns_to_scale if col not in exclude_columns]
+        if columns_to_scale is None:
+            columns_to_scale = [col for col in data_frame.select_dtypes(include=['float64', 'int64']).columns.tolist() if
+                                col not in exclude_columns]
+        else:
+            columns_to_scale = [col for col in columns_to_scale if col not in exclude_columns]
 
-    scaler = StandardScaler()
-    data_frame[columns_to_scale] = scaler.fit_transform(data_frame[columns_to_scale])
+        scaler = StandardScaler()
+        data_frame[columns_to_scale] = scaler.fit_transform(data_frame[columns_to_scale])
 
-    return data_frame
+        return data_frame
+    except Exception as e:
+        print(f"Error during standardization: {e}")
+        return data_frame
 
 
 def min_max_scale_columns(data_frame: pd.DataFrame, columns_to_scale: Optional[List[str]] = None,
@@ -40,16 +44,20 @@ def min_max_scale_columns(data_frame: pd.DataFrame, columns_to_scale: Optional[L
 
     :return: DataFrame with specified columns scaled using Min-Max scaling, excluding specified columns.
     """
-    if exclude_columns is None:
-        exclude_columns = []
+    try:
+        if exclude_columns is None:
+            exclude_columns = []
 
-    if columns_to_scale is None:
-        columns_to_scale = [col for col in data_frame.select_dtypes(include=['float64', 'int64']).columns.tolist() if
-                            col not in exclude_columns]
-    else:
-        columns_to_scale = [col for col in columns_to_scale if col not in exclude_columns]
+        if columns_to_scale is None:
+            columns_to_scale = [col for col in data_frame.select_dtypes(include=['float64', 'int64']).columns.tolist() if
+                                col not in exclude_columns]
+        else:
+            columns_to_scale = [col for col in columns_to_scale if col not in exclude_columns]
 
-    scaler = MinMaxScaler()
-    data_frame[columns_to_scale] = scaler.fit_transform(data_frame[columns_to_scale])
+        scaler = MinMaxScaler()
+        data_frame[columns_to_scale] = scaler.fit_transform(data_frame[columns_to_scale])
 
-    return data_frame
+        return data_frame
+    except Exception as e:
+        print(f"Error during Min-Max scaling: {e}")
+        return data_frame

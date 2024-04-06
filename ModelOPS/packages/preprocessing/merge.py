@@ -13,7 +13,6 @@ def find_similar_files(file_names: List[str], threshold: int = 85) -> List[List[
 
     :return: List of lists, where each sublist contains filenames considered similar.
     """
-
     similar_groups = []
     while file_names:
         base = file_names.pop(0)
@@ -35,7 +34,6 @@ def merge_files(directory_path: str, save_directory: str, threshold: int = 85):
     :param save_directory: Directory where merged files will be saved.
     :param threshold: Similarity threshold for considering filenames as a match.
     """
-
     file_names = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
     similar_groups = find_similar_files(file_names, threshold)
 
