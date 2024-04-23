@@ -60,7 +60,7 @@ def remove_outliers(data_frame: pd.DataFrame,
         numerical_columns = [col for col in data_frame.select_dtypes(include=['float64', 'int64']).columns if
                              col not in exclude_columns]
         if len(numerical_columns) == 0:
-            return data_frame  # No numerical columns to process
+            return data_frame
 
         df_numerical = data_frame[numerical_columns].apply(zscore)
         mask = (np.abs(df_numerical) < z_score_threshold).all(axis=1)

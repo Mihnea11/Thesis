@@ -3,133 +3,131 @@
 </div>
 
 <div class="container">
-    <form (ngSubmit)="onSubmit()">
-        <div class="section basic-settings">
-            <h2>Basic Settings</h2>
-            <div class="input-wrapper">
-                <input [type]="'text'" 
-                        id="label" 
-                        required 
-                        [(ngModel)]="selectedLabel" 
-                        name="label" 
-                        (input)="filterLabels()"
-                        (focus)="openLabelsDropdown=true"
-                        (blur)="closeDropdown('label')">
-                <label for="label" class="placeholder">Select a label for your data</label>
-                <ul [class.dropdown-menu--visible]="openLabelsDropdown" [class.dropdown-menu--closing]="closeLabelsDropdown" class="dropdown-menu">
-                  <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
-                    {{ currentLabel }}
-                  </li>
-                </ul>
-            </div>
-
-            <div class="input-wrapper">
-                <input type="text" id="causalityColumn" required [(ngModel)]="causalityColumn" name="causalityColumn">
-                <label for="causalityColumn" class="placeholder">Causality Analysis Column</label>
-            </div>
-        </div>
-        
-        <div *ngIf="showExpertSettings" class="section expert-settings">
-            <h2>Expert Settings</h2>
-            <div class="input-wrapper">
-                <input [type]="'text'" 
-                        id="algorithmType" 
-                        required 
-                        [(ngModel)]="selectedAlgorithm" 
-                        name="algorithmType" 
-                        (keydown)="$event.preventDefault()"
-                        (focus)="openAlgorithmDropdown=true"
-                        (blur)="closeDropdown('algorithm')">
-                <label for="algorithmType" class="placeholder">Select algorithm type</label>
-                <ul [class.dropdown-menu--visible]="openAlgorithmDropdown" [class.dropdown-menu--closing]="closeAlgorithmDropdown" class="dropdown-menu">
-                  <li (click)="selectAlgorithm('First')">First</li>
-                  <li (click)="selectAlgorithm('Second')">Second</li>
-                </ul>
-            </div>
+    <div class="section basic-settings">
+        <h2>Basic Settings</h2>
+        <div class="input-wrapper">
+            <input [type]="'text'" 
+                    id="label" 
+                    required 
+                    [(ngModel)]="selectedLabel" 
+                    name="label" 
+                    (input)="filterLabels()"
+                    (focus)="openLabelsDropdown=true"
+                    (blur)="closeDropdown('label')">
+            <label for="label" class="placeholder">Select a label for your data</label>
+            <ul [class.dropdown-menu--visible]="openLabelsDropdown" [class.dropdown-menu--closing]="closeLabelsDropdown" class="dropdown-menu">
+                <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
+                {{ currentLabel }}
+                </li>
+            </ul>
         </div>
 
-        <div *ngIf="showCleaningSettings" class="section cleaning-options">
-            <h2>Cleaning Options</h2>
-
-            <div class="input-wrapper">
-                <input [type]="'text'" 
-                        id="encodingType" 
-                        required
-                        [(ngModel)]="selectedEncoding" 
-                        name="encodingType"
-                        (keydown)="$event.preventDefault()"
-                        (focus)="openEncodingDropdown=true"
-                        (blur)="closeDropdown('encoding')">
-                <label for="encodingType" class="placeholder">Select encoding type</label>
-                <ul [class.dropdown-menu--visible]="openEncodingDropdown" [class.dropdown-menu--closing]="closeEncodingDropdown" class="dropdown-menu">
-                  <li (click)="selectEncoding('Label Encoding')">Label Encoding</li>
-                  <li (click)="selectEncoding('One-Hot Encoding')">One-Hot Encoding</li>
-                </ul>
-            </div>
-
-            <div class="input-wrapper">
-                <input [type]="'text'" 
-                        id="scalingType" 
-                        required
-                        [(ngModel)]="selectedScaling" 
-                        name="scalingType"
-                        (keydown)="$event.preventDefault()"
-                        (focus)="openScalingDropdown=true"
-                        (blur)="closeDropdown('scaling')">
-                <label for="scalingType" class="placeholder">Select scaling type</label>
-                <ul [class.dropdown-menu--visible]="openScalingDropdown" [class.dropdown-menu--closing]="closeScalingDropdown" class="dropdown-menu">
-                  <li (click)="selectScaling('Standardize')">Standardize</li>
-                  <li (click)="selectScaling('Min-Max')">Min-Max</li>
-                </ul>
-            </div>
-
-            <div class="input-wrapper">
-                <input type="text" id="patientIdentifier" required [(ngModel)]="patientIdentifier" name="patientIdentifier">
-                <label for="patientIdentifier" class="placeholder">Patient Identifier Column</label>
-            </div>
-
-            <div class="input-wrapper">
-                <input type="text" id="excludedColumns" required [(ngModel)]="excludedColumns" name="excludedColumns">
-                <label for="excludedColumns" class="placeholder">Excluded Columns from Cleaning</label>
-            </div>
-
-            <div class="slider-wrapper">
-                <label for="rowThreshold">
-                    Row Threshold: {{rowThreshold}}%
-                    <span class="info-icon">i
-                        <span class="tooltip-content">Set the <b>Row Threshold</b> to determine the maximum allowed percentage of missing patient data per row. Rows with missing data exceeding this limit will not be included in the analysis.</span>
-                    </span>
-                </label>
-                <input type="range" id="rowThreshold" min="0" max="100" (input)="updateThreshold($event, 'row')">
-            </div>
-              
-            <div class="slider-wrapper">
-                <label for="columnThreshold">
-                    Column Threshold: {{columnThreshold}}%
-                    <span class="info-icon">i
-                        <span class="tooltip-content">Set the <b>Column Threshold</b> to determine the maximum allowed percentage of missing patient data per column. Columns with missing data exceeding this limit will not be included in the analysis.</span>
-                    </span>
-                </label>
-                <input type="range" id="columnThreshold" min="0" max="100" [(ngModel)]="columnThreshold" [value]="columnThreshold" (input)="updateThreshold($event, 'column')">
-            </div>
+        <div class="input-wrapper">
+            <input type="text" id="causalityColumn" required [(ngModel)]="causalityColumn" name="causalityColumn">
+            <label for="causalityColumn" class="placeholder">Causality Analysis Column</label>
         </div>
-        
-        <div>
-            <div class="checkbox-container">
-                <input class="checkbox-flip" type="checkbox" id="toggleExpert" (change)="toggleExpertSettings()" formControlName="expertSettings">
-                <label for="toggleExpert"><span></span>Expert Settings</label>
-            </div>
+    </div>
+    
+    <div *ngIf="showExpertSettings" class="section expert-settings">
+        <h2>Expert Settings</h2>
+        <div class="input-wrapper">
+            <input [type]="'text'" 
+                    id="algorithmType" 
+                    required 
+                    [(ngModel)]="selectedAlgorithm" 
+                    name="algorithmType" 
+                    (keydown)="$event.preventDefault()"
+                    (focus)="openAlgorithmDropdown=true"
+                    (blur)="closeDropdown('algorithm')">
+            <label for="algorithmType" class="placeholder">Select algorithm type</label>
+            <ul [class.dropdown-menu--visible]="openAlgorithmDropdown" [class.dropdown-menu--closing]="closeAlgorithmDropdown" class="dropdown-menu">
+                <li (click)="selectAlgorithm('First')">First</li>
+                <li (click)="selectAlgorithm('Second')">Second</li>
+            </ul>
+        </div>
+    </div>
+
+    <div *ngIf="showCleaningSettings" class="section cleaning-options">
+        <h2>Cleaning Options</h2>
+
+        <div class="input-wrapper">
+            <input [type]="'text'" 
+                    id="encodingType" 
+                    required
+                    [(ngModel)]="selectedEncoding" 
+                    name="encodingType"
+                    (keydown)="$event.preventDefault()"
+                    (focus)="openEncodingDropdown=true"
+                    (blur)="closeDropdown('encoding')">
+            <label for="encodingType" class="placeholder">Select encoding type</label>
+            <ul [class.dropdown-menu--visible]="openEncodingDropdown" [class.dropdown-menu--closing]="closeEncodingDropdown" class="dropdown-menu">
+                <li (click)="selectEncoding('Label Encoding')">Label Encoding</li>
+                <li (click)="selectEncoding('One-Hot Encoding')">One-Hot Encoding</li>
+            </ul>
         </div>
 
-        <div>
-            <div class="checkbox-container">
-                <input class="checkbox-flip" type="checkbox" id="enableCleaning" (change)="toggleCleaningSettings()" name="enableCleaning">
-                <label for="enableCleaning"><span></span>Run Server-Defined Cleaning Process</label>
-            </div>
+        <div class="input-wrapper">
+            <input [type]="'text'" 
+                    id="scalingType" 
+                    required
+                    [(ngModel)]="selectedScaling" 
+                    name="scalingType"
+                    (keydown)="$event.preventDefault()"
+                    (focus)="openScalingDropdown=true"
+                    (blur)="closeDropdown('scaling')">
+            <label for="scalingType" class="placeholder">Select scaling type</label>
+            <ul [class.dropdown-menu--visible]="openScalingDropdown" [class.dropdown-menu--closing]="closeScalingDropdown" class="dropdown-menu">
+                <li (click)="selectScaling('Standardize')">Standardize</li>
+                <li (click)="selectScaling('Min-Max')">Min-Max</li>
+            </ul>
         </div>
 
-        <div class="actions">
-            <button type="submit" class="submit-button">Submit</button>
+        <div class="input-wrapper">
+            <input type="text" id="patientIdentifier" required [(ngModel)]="patientIdentifier" name="patientIdentifier">
+            <label for="patientIdentifier" class="placeholder">Patient Identifier Column</label>
         </div>
-    </form>
+
+        <div class="input-wrapper">
+            <input type="text" id="excludedColumns" required [(ngModel)]="excludedColumns" name="excludedColumns">
+            <label for="excludedColumns" class="placeholder">Excluded Columns from Cleaning (comma separated)</label>
+        </div>
+
+        <div class="slider-wrapper">
+            <label for="rowThreshold">
+                Row Threshold: {{rowThreshold}}%
+                <span class="info-icon">i
+                    <span class="tooltip-content">Set the <b>Row Threshold</b> to determine the maximum allowed percentage of missing patient data per row. Rows with missing data exceeding this limit will not be included in the analysis.</span>
+                </span>
+            </label>
+            <input type="range" id="rowThreshold" min="0" max="100" (input)="updateThreshold($event, 'row')">
+        </div>
+            
+        <div class="slider-wrapper">
+            <label for="columnThreshold">
+                Column Threshold: {{columnThreshold}}%
+                <span class="info-icon">i
+                    <span class="tooltip-content">Set the <b>Column Threshold</b> to determine the maximum allowed percentage of missing patient data per column. Columns with missing data exceeding this limit will not be included in the analysis.</span>
+                </span>
+            </label>
+            <input type="range" id="columnThreshold" min="0" max="100" [(ngModel)]="columnThreshold" [value]="columnThreshold" (input)="updateThreshold($event, 'column')">
+        </div>
+    </div>
+    
+    <div>
+        <div class="checkbox-container">
+            <input class="checkbox-flip" type="checkbox" id="toggleExpert" (change)="toggleExpertSettings()" Name="expertSettings">
+            <label for="toggleExpert"><span></span>Expert Settings</label>
+        </div>
+    </div>
+
+    <div>
+        <div class="checkbox-container">
+            <input class="checkbox-flip" type="checkbox" id="enableCleaning" (change)="toggleCleaningSettings()" Name="enableCleaning">
+            <label for="enableCleaning"><span></span>Run Server-Defined Cleaning Process</label>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button type="submit" class="submit-button" (click)="submitConfiguration()">Submit</button>
+    </div>
 </div>

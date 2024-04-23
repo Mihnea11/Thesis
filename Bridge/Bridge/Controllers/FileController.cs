@@ -48,7 +48,7 @@ namespace Bridge.Controllers
         }
 
         [HttpPost("StartUpload")]
-        public async Task<IActionResult> StartUploadSession([FromBody] UploadSessionInitModel initModel)
+        public IActionResult StartUploadSession([FromBody] UploadSessionInitModel initModel)
         {
             var userId = GetUserIdFromToken();
             if (string.IsNullOrEmpty(userId))
@@ -66,7 +66,6 @@ namespace Bridge.Controllers
             };
 
             uploadSessions.TryAdd(sessionId, uploadSession);
-
             return Ok(new { SessionId = sessionId });
         }
 

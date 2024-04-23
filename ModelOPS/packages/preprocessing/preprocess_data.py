@@ -1,10 +1,10 @@
 import os
 import pandas as pd
-from merge import merge_files
-from clean import clean_dataset
 from typing import List, Optional
-from scale import standardize_columns, min_max_scale_columns
-from encode import one_hot_encode_columns, label_encode_columns
+from packages.preprocessing.merge import merge_files
+from packages.preprocessing.clean import clean_dataset
+from packages.preprocessing.scale import standardize_columns, min_max_scale_columns
+from packages.preprocessing.encode import one_hot_encode_columns, label_encode_columns
 
 
 def preprocess_files(input_directory: str,
@@ -35,8 +35,10 @@ def preprocess_files(input_directory: str,
     - column_threshold (float, optional): The threshold for the proportion of missing values in a column, above which the column is removed. Defaults to 0.5.
     - exclude_columns (List[str], optional): A list of column names to be excluded from being altered during the preprocessing steps, including the patient identifier.
     """
-
     merge_files(input_directory, output_directory)
+
+    if patient_identifier not in exclude_columns:
+        exclude_columns.append(patient_identifier)
 
     for filename in os.listdir(output_directory):
         if filename.startswith("merged_"):
@@ -69,4 +71,4 @@ def preprocess_files(input_directory: str,
             os.remove(file_path)
             print(f"Deleted merged file: {file_path}")
 
-preprocess_files(r'C:\Users\z004nwxe\Desktop\test_files', r'C:\Users\z004nwxe\Desktop\test_result', 'CHR_NO', exclude_columns=['CHR_NO', 'CSTAGE'])
+#preprocess_files(r'C:\Users\z004nwxe\Desktop\test_files', r'C:\Users\z004nwxe\Desktop\test_result', 'CHR_NO', exclude_columns=['CHR_NO', 'CSTAGE'])

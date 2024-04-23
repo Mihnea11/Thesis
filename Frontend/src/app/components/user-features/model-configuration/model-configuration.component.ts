@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
+import { catchError, from, switchMap } from 'rxjs';
+import { DownloadRequest } from 'src/app/models/download-request';
 import { FileService } from 'src/app/services/file.service';
+import { ModelOPSService } from 'src/app/services/model-ops.service';
 
 @Component({
   selector: 'app-model-configuration',
@@ -7,8 +10,6 @@ import { FileService } from 'src/app/services/file.service';
   styleUrls: ['./model-configuration.component.scss']
 })
 export class ModelConfigurationComponent {
-  
-  //Cleaning options
   patientIdentifier: string = '';
   selectedEncoding: string = '';
   rowThreshold: number = 50;
@@ -17,7 +18,6 @@ export class ModelConfigurationComponent {
   openEncodingDropdown: boolean = false;
   closeEncodingDropdown: boolean = false;
 
-  //Scaling options
   selectedScaling: string = '';
   openScalingDropdown: boolean = false;
   closeScalingDropdown: boolean = false;
@@ -38,14 +38,10 @@ export class ModelConfigurationComponent {
 
   selectedAlgorithm: string = '';
 
-  constructor(private fileService: FileService) { }
+  constructor(private fileService: FileService, private modelOpsService: ModelOPSService) { }
 
   ngOnInit(): void {
     this.retrieveLabels();
-  }
-  
-  onSubmit(): void {
-
   }
 
   toggleExpertSettings(): void {
@@ -142,6 +138,29 @@ export class ModelConfigurationComponent {
         break;
       }
     }
+  }
+
+  submitConfiguration(): void {
+    this.modelOpsService.startSession().pipe(
+      switchMap(sessionResponse => {
+        const sessionId = sessionResponse.sessionId;
+        const downloadRequest: DownloadRequest = {
+          bucketName: "",
+          userId: "",
+          label: this.selectedLabel
+        };
+
+        return this.modelOpsService.downloadFiles(sessionId, downloadRequest);
+      }),
+      catchError(sessionError => {
+        console.error("Session start failed", sessionError);
+        return from([]);
+      })
+    ).subscribe({
+      next: finalResponse => {console.log("Configuration complete", finalResponse)},
+      error: err => console.error("Error configurating model", err),
+      complete: () => console.log("Operation finished")
+    });
   }
 
   private retrieveLabels(): void {
