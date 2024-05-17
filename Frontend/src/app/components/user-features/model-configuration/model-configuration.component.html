@@ -2,7 +2,7 @@
     <h1>Configure Your Model</h1>
 </div>
 
-<div class="container">
+<div class="container" *ngIf="!showTrainingNotification">
     <div class="section basic-settings">
         <h2>Basic Settings</h2>
         <div class="input-wrapper">
@@ -14,7 +14,7 @@
                     (input)="filterLabels()"
                     (focus)="openLabelsDropdown=true"
                     (blur)="closeDropdown('label')">
-            <label for="label" class="placeholder">Select a label for your data</label>
+            <label for="label" class="placeholder">Select the label of your data</label>
             <ul [class.dropdown-menu--visible]="openLabelsDropdown" [class.dropdown-menu--closing]="closeLabelsDropdown" class="dropdown-menu">
                 <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
                 {{ currentLabel }}
@@ -24,26 +24,37 @@
 
         <div class="input-wrapper">
             <input type="text" id="causalityColumn" required [(ngModel)]="causalityColumn" name="causalityColumn">
-            <label for="causalityColumn" class="placeholder">Causality Analysis Column</label>
+            <label for="causalityColumn" class="placeholder">Target Column</label>
         </div>
     </div>
     
     <div *ngIf="showExpertSettings" class="section expert-settings">
         <h2>Expert Settings</h2>
+        <h1>Algorithm type: Random Forest</h1>
+
         <div class="input-wrapper">
-            <input [type]="'text'" 
-                    id="algorithmType" 
-                    required 
-                    [(ngModel)]="selectedAlgorithm" 
-                    name="algorithmType" 
-                    (keydown)="$event.preventDefault()"
-                    (focus)="openAlgorithmDropdown=true"
-                    (blur)="closeDropdown('algorithm')">
-            <label for="algorithmType" class="placeholder">Select algorithm type</label>
-            <ul [class.dropdown-menu--visible]="openAlgorithmDropdown" [class.dropdown-menu--closing]="closeAlgorithmDropdown" class="dropdown-menu">
-                <li (click)="selectAlgorithm('First')">First</li>
-                <li (click)="selectAlgorithm('Second')">Second</li>
-            </ul>
+            <input type="text" id="maxDepth" required [(ngModel)]="maxDepth" name="maxDepth">
+            <label for="maxDepth" class="placeholder">Max Depth</label>
+        </div>
+
+        <div class="input-wrapper">
+            <input type="text" id="randomState" required [(ngModel)]="randomState" name="randomState">
+            <label for="randomState" class="placeholder">Random State</label>
+        </div>
+
+        <div class="input-wrapper">
+            <input type="text" id="excludedTrainingColumns" required [(ngModel)]="excludedTrainingColumns" name="excludedTrainingColumns">
+            <label for="excludedTrainingColumns" class="placeholder">Excluded Columns from Training (comma separated)</label>
+        </div>
+
+        <div class="slider-wrapper">
+            <label for="chunkSize">
+                Chunk Size: {{chunkSize}} rows
+                <span class="info-icon">i
+                    <span class="tooltip-content">Set the <b>Chunk Size</b> to control the number of rows read in each chunk when processing large files. Smaller values use less memory, while larger values can process faster but use more memory.</span>
+                </span>
+            </label>
+            <input type="range" id="chunkSize" min="1000" max="50000" step="1000" [(ngModel)]="chunkSize" (input)="updateChunkSize($event)">
         </div>
     </div>
 
@@ -88,8 +99,8 @@
         </div>
 
         <div class="input-wrapper">
-            <input type="text" id="excludedColumns" required [(ngModel)]="excludedColumns" name="excludedColumns">
-            <label for="excludedColumns" class="placeholder">Excluded Columns from Cleaning (comma separated)</label>
+            <input type="text" id="excludedCleaningColumns" required [(ngModel)]="excludedCleaningColumns" name="excludedCleaningColumns">
+            <label for="excludedCleaningColumns" class="placeholder">Excluded Columns from Cleaning (comma separated)</label>
         </div>
 
         <div class="slider-wrapper">
@@ -128,6 +139,11 @@
     </div>
 
     <div class="actions">
-        <button type="submit" class="submit-button" (click)="submitConfiguration()">Submit</button>
+        <button type="submit" class="submit-button" (click)="submitConfiguration()" [disabled]="!validateInput()">Submit</button>
     </div>
+</div>
+
+<div class="notification-card" *ngIf="showTrainingNotification">
+    <h2>You will be notified once the model has finished training</h2>
+    <p class="warning-text">Feel free to navigate through the website, but please DO NOT close this tab</p>
 </div>

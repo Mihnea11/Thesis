@@ -2,4 +2,12 @@ from pydantic import BaseModel
 
 
 class TrainModelRequest(BaseModel):
-    something: str
+    input_path: str
+    target_column: str
+    max_depth: int
+    random_state: int
+    chunk_size: int
+    bucket_name: str
+    excluded_columns: list
+    label: str
+    user_id: str

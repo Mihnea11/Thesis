@@ -1,5 +1,6 @@
 import asyncio
 import os.path
+import shutil
 import tempfile
 from fastapi import FastAPI, HTTPException
 from packages.minio_file_handler import client
@@ -7,6 +8,7 @@ from packages.helpers.TrainModelRequestModel import TrainModelRequest
 from packages.helpers.FileDownloadRequestModel import FileDownloadRequest
 from packages.helpers.FileCleaningRequestModel import FileCleaningRequest
 from packages.preprocessing.preprocess_data import preprocess_files
+from packages.processing import random_forest
 
 app = FastAPI()
 minio_client = client.MinioClient()
@@ -44,19 +46,31 @@ async def clean_files(request: FileCleaningRequest):
                          request.row_threshold,
                          request.column_threshold,
                          request.excluded_columns)
-
-        os.remove(request.input_path)
-
         return {"message": "Files cleaned successfully", "cleaned_files_path": output_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        shutil.rmtree(request.input_path)
 
 
 @app.post("/train_model")
 async def train_model(request: TrainModelRequest):
-    # TO DO: IMPLEMENT ENDPOINT
-    return
+    temporary_directory = tempfile.mkdtemp()
 
+    try:
+        random_forest.run(request.input_path,
+                          temporary_directory,
+                          request.target_column,
+                          request.max_depth,
+                          request.random_state,
+                          request.chunk_size,
+                          request.excluded_columns)
+        minio_client.upload_directory(request.bucket_name, request.user_id, request.label, temporary_directory)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        shutil.rmtree(temporary_directory)
+        shutil.rmtree(request.input_path)
 
 if __name__ == "__main__":
     import uvicorn

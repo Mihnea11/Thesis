@@ -129,6 +129,17 @@ namespace Bridge.ModelOPS_Connection
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
+                    FileCleaningResponseModel? result = JsonSerializer.Deserialize<FileCleaningResponseModel>(responseContent);
+
+                    if (result == null)
+                    {
+                        session.State = "DownloadFailed";
+                        await SendErrorNotification(session.UserId, sessionId);
+                        return BadRequest("Failed to download files: " + response.StatusCode);
+                    }
+
+                    session.TemporaryDirectory = result.FilePath;
+                    session.State = "Downloaded";
                     return Ok(responseContent);
                 }
                 else
@@ -136,6 +147,56 @@ namespace Bridge.ModelOPS_Connection
                     session.State = "CleanFailed";
                     await SendErrorNotification(session.UserId, sessionId);
                     return BadRequest("Failed to clean files: " + response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                session.State = "Error";
+                await SendErrorNotification(session.UserId, sessionId);
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpPost("TrainModel/{sessionId}")]
+        public async Task<IActionResult> TrainModel([FromBody] TrainModelRequestModel request, string sessionId)
+        {
+            if (!sessions.TryGetValue(sessionId, out var session))
+            {
+                return NotFound("Session not found.");
+            }
+
+            if (session.UserId != GetUserIdFromToken())
+            {
+                return Unauthorized("Unauthorized access.");
+            }
+
+            session.State = "TrainingStarted";
+
+            string url = baseUrl + "/train_model";
+            try
+            {
+                request.BucketName = "thesis-results";
+                request.InputPath = session.TemporaryDirectory;
+                request.UserId = session.UserId;
+
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(url, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    session.State = "TrainingCompleted";
+                    await SendSuccessNotification(session.UserId, responseContent);
+
+                    return Ok(responseContent);
+                }
+                else
+                {
+                    session.State = "TrainingFailed";
+                    await SendErrorNotification(session.UserId, sessionId);
+                    return BadRequest("Failed to train model: " + response.StatusCode);
                 }
             }
             catch (Exception ex)
@@ -173,6 +234,28 @@ namespace Bridge.ModelOPS_Connection
             };
 
             await notificationService.AddNotificationAsync(notification);
+        }
+
+        private async Task SendSuccessNotification(string userId, string sessionId)
+        {
+
+            NotificationModel notification = new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Message = $"Your model has finished training. You can now check the results."
+            };
+
+            await notificationService.AddNotificationAsync(notification);
+
+            if (sessions.TryRemove(sessionId, out _))
+            {
+                Console.WriteLine($"Session {sessionId} finished and removed successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to remove session {sessionId}.");
+            }
         }
     }
 }

@@ -1,10 +1,36 @@
 import os
 import pandas as pd
 from typing import List, Optional
+from difflib import get_close_matches
 from packages.preprocessing.merge import merge_files
 from packages.preprocessing.clean import clean_dataset
 from packages.preprocessing.scale import standardize_columns, min_max_scale_columns
 from packages.preprocessing.encode import one_hot_encode_columns, label_encode_columns
+
+
+def choose_closest_match(user_input, valid_options, cutoff=0.8):
+    """
+    Selects the closest match from valid options based on similarity, ignoring case differences.
+
+    Args:
+        user_input (str): The user's input string.
+        valid_options (list): A list of valid option strings.
+        cutoff (float): The minimum similarity ratio to consider a match (scale from 0 to 1).
+
+    Returns:
+        str: The closest matching string from valid_options if a good match is found,
+             otherwise returns None to indicate no acceptable match was found.
+    """
+
+    normalized_input = user_input.lower()
+    normalized_options = [option.lower() for option in valid_options]
+
+    matches = get_close_matches(normalized_input, normalized_options, n=1, cutoff=cutoff)
+    if matches:
+        for option in valid_options:
+            if option.lower() == matches[0]:
+                return option
+    return None
 
 
 def preprocess_files(input_directory: str,
@@ -35,7 +61,21 @@ def preprocess_files(input_directory: str,
     - column_threshold (float, optional): The threshold for the proportion of missing values in a column, above which the column is removed. Defaults to 0.5.
     - exclude_columns (List[str], optional): A list of column names to be excluded from being altered during the preprocessing steps, including the patient identifier.
     """
+    valid_encode_methods = ['one_hot_encoding', 'label_encoding', 'none']
+    valid_scale_methods = ['standardize', 'min_max']
+
+    chosen_encode_method = choose_closest_match(encode_method, valid_encode_methods)
+    chosen_scale_method = choose_closest_match(scale_method, valid_scale_methods)
+
+    if not chosen_encode_method:
+        raise ValueError(f"Invalid encode_method '{encode_method}'. Choose from {valid_encode_methods}.")
+    if not chosen_scale_method:
+        raise ValueError(f"Invalid scale_method '{scale_method}'. Choose from {valid_scale_methods}.")
+
     merge_files(input_directory, output_directory)
+
+    if exclude_columns is None:
+        exclude_columns = []
 
     if patient_identifier not in exclude_columns:
         exclude_columns.append(patient_identifier)
@@ -47,21 +87,17 @@ def preprocess_files(input_directory: str,
 
             df_cleaned = clean_dataset(df, patient_identifier, row_threshold, column_threshold, exclude_columns)
 
-            if encode_method == 'one_hot':
+            if chosen_encode_method == 'one_hot_encoding':
                 df_encoded = one_hot_encode_columns(df_cleaned, exclude_columns=exclude_columns)
-            elif encode_method == 'label':
+            elif chosen_encode_method == 'label_encoding':
                 df_encoded = label_encode_columns(df_cleaned, exclude_columns=exclude_columns)
-            elif encode_method == 'none':
+            else:
                 df_encoded = df_cleaned
-            else:
-                raise ValueError("Invalid encode_method. Choose 'one_hot' or 'label'.")
 
-            if scale_method == 'standardize':
+            if chosen_scale_method == 'standardize':
                 df_scaled = standardize_columns(df_encoded, exclude_columns=exclude_columns)
-            elif scale_method == 'min_max':
+            elif chosen_scale_method == 'min_max':
                 df_scaled = min_max_scale_columns(df_encoded, exclude_columns=exclude_columns)
-            else:
-                raise ValueError("Invalid scale_method. Choose 'standardize' or 'min_max'.")
 
             processed_filename = f"processed_{filename}"
             output_file_path = os.path.join(output_directory, processed_filename)
@@ -70,5 +106,3 @@ def preprocess_files(input_directory: str,
 
             os.remove(file_path)
             print(f"Deleted merged file: {file_path}")
-
-#preprocess_files(r'C:\Users\z004nwxe\Desktop\test_files', r'C:\Users\z004nwxe\Desktop\test_result', 'CHR_NO', exclude_columns=['CHR_NO', 'CSTAGE'])
