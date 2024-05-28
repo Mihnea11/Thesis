@@ -129,7 +129,7 @@
   border-radius: 50%;
   width: 3.5rem;
   height: 3.5rem;
-  animation: spin 2s linear infinite;
+  animation: smooth-spin 2s linear infinite;
 }
 
 .view-password-btn {
@@ -210,6 +210,18 @@
 .input-wrapper {
   flex: 1;
   margin-bottom: 2rem;
+}
+
+@keyframes smooth-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 48rem) {

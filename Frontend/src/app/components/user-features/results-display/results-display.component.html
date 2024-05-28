@@ -1,1 +1,59 @@
-<p>results-display works!</p>
+<div class="container">
+    <div class="label-wrapper">
+        <input [type]="'text'" 
+                id="label" 
+                required 
+                [(ngModel)]="selectedLabel" 
+                name="label" 
+                (input)="filterLabels()"
+                (focus)="openDropdown=true"
+                (blur)="closeDropdown()">
+        <label for="label" class="placeholder">Select a label to view results for</label>
+        <ul [class.dropdown-menu--visible]="openDropdown" [class.dropdown-menu--closing]="closingDropdown" class="dropdown-menu">
+          <li *ngFor="let currentLabel of filteredLabels" (click)="selectLabel(currentLabel)">
+            {{ currentLabel }}
+          </li>
+        </ul>
+    </div>
+
+    <div *ngIf="selectedLabel" class="icon-buttons">
+        <button (click)="toggleIcon('features')" [class.active]="activeIcon === 'features'">
+            <img src="../../../../assets/icons/extracted-features.svg" alt="First Icon">
+        </button>
+        <button (click)="toggleIcon('graphs')" [class.active]="activeIcon === 'graphs'">
+            <img src="../../../../assets/icons/extracted-features-report.svg" alt="Second Icon">
+        </button>
+        <button (click)="toggleIcon('stats')" [class.active]="activeIcon === 'stats'">
+            <img src="../../../../assets/icons/extracted-features-stats.svg" alt="Third Icon">
+        </button>
+    </div>
+
+    <div *ngIf="showLoadingSpinner" class="spinner-container">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div *ngIf="errorOccurred" class="error-container">
+        <div class="error-card">
+            <button class="close-button" (click)="errorOccurred = false">&times;</button>
+            <p>{{ errorMessage }}</p>
+            <button *ngIf="activeIcon === 'features'" (click)="loadFeatures()">Try Again</button>
+        </div>
+    </div>
+    
+    <div *ngIf="features && activeIcon === 'features' && !errorOccurred && !showLoadingSpinner" class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Importance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let feature of features">
+              <td>{{ feature.name }}</td>
+              <td>{{ feature.importance | number:'1.0-3' }}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</div>

@@ -129,7 +129,7 @@
   border-radius: 50%;
   width: 3.5rem;
   height: 3.5rem;
-  animation: spin 2s linear infinite;
+  animation: smooth-spin 2s linear infinite;
 }
 
 .checkbox-container {
@@ -224,6 +224,18 @@
 
   &:hover {
     transform: scale(1.05); 
+  }
+}
+
+@keyframes smooth-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 

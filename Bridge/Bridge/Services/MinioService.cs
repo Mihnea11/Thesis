@@ -87,5 +87,47 @@ namespace Bridge.Services
                 return false;
             }
         }
+
+        public async Task<Dictionary<string, string>> GetFileContentAsJsonAsync(string bucketName, string userId, string label, string fileName)
+        {
+            var objectName = $"{userId}/{label}/{fileName}";
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var getObjectArgs = new GetObjectArgs().WithBucket(bucketName)
+                                                           .WithObject(objectName)
+                                                           .WithCallbackStream(stream =>
+                                                           {
+                                                               stream.CopyTo(ms);
+                                                           });
+
+                    await minioClient.GetObjectAsync(getObjectArgs).ConfigureAwait(false);
+
+                    ms.Position = 0;
+                    using (var reader = new StreamReader(ms))
+                    {
+                        var results = new Dictionary<string, string>();
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split(':');
+                            if (parts.Length == 2)
+                            {
+                                var feature = parts[0].Trim();
+                                var importance = parts[1].Trim();
+                                results.Add(feature, importance);
+                            }
+                        }
+                        return results;
+                    }
+                }
+            }
+            catch (MinioException e)
+            {
+                Console.WriteLine($"Error occurred: {e}");
+                throw new ApplicationException("Unable to retrieve or parse the file.", e);
+            }
+        }
     }
 }

@@ -15,14 +15,16 @@ namespace Bridge.ModelOPS_Connection
     public class ModelOPSController : ControllerBase
     {
         private readonly HttpClient httpClient;
+        private readonly MinioService minioService;
         private readonly NotificationService notificationService;
 
         private readonly string baseUrl = "http://127.0.0.1:8000";
         private static ConcurrentDictionary<string, ConfigurationSessionModel> sessions = new ConcurrentDictionary<string, ConfigurationSessionModel>();
 
-        public ModelOPSController(HttpClient httpClient, NotificationService notificationService)
+        public ModelOPSController(HttpClient httpClient, MinioService minioService, NotificationService notificationService)
         {
             this.httpClient = httpClient;
+            this.minioService = minioService;
             this.notificationService = notificationService;
         }
 
@@ -205,6 +207,44 @@ namespace Bridge.ModelOPS_Connection
                 await SendErrorNotification(session.UserId, sessionId);
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
+        }
+
+        [HttpGet("Results/Features/{label}")]
+        public async Task<IActionResult> GetExtractedFeatures(string label)
+        {
+            string userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            string bucketName = "thesis-results";
+            string fileName = "feature_importances.txt";
+
+            try
+            {
+                var featureImportances = await minioService.GetFileContentAsJsonAsync(bucketName, userId, label, fileName);
+
+                if (featureImportances != null && featureImportances.Count > 0)
+                {
+                    return Ok(featureImportances);
+                }
+                else
+                {
+                    return NotFound("No feature importances data found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving feature importances: {ex.Message}");
+                return StatusCode(500, "Internal server error while retrieving features.");
+            }
+        }
+
+        [HttpGet("Results/Graphics/{label}")]
+        public async Task<IActionResult> GetGeneratedGraphics(string label)
+        {
+            return BadRequest();
         }
 
         private string GetUserIdFromToken()
