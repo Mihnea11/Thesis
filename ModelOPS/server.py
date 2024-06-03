@@ -49,8 +49,6 @@ async def clean_files(request: FileCleaningRequest):
         return {"message": "Files cleaned successfully", "cleaned_files_path": output_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        shutil.rmtree(request.input_path)
 
 
 @app.post("/train_model")

@@ -13,4 +13,8 @@ export class ResultsService {
   getExtractedFeatures(label: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Features/${label}`);
   }
+
+  getGeneratedGraphics(label: string, start: number, count: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/Graphics/${label}/${start}:${count}`);
+  }
 }

@@ -32,6 +32,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ModelConfigurationComponent } from './components/user-features/model-configuration/model-configuration.component';
 import { ResultsDisplayComponent } from './components/user-features/results-display/results-display.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { ResultsDisplayComponent } from './components/user-features/results-disp
     MatListModule,
     MatInputModule,
     MatSelectModule,
+    ScrollingModule,
     MatButtonModule,
     MatSidenavModule,
     HttpClientModule,

@@ -36,7 +36,7 @@ def choose_closest_match(user_input, valid_options, cutoff=0.8):
 def preprocess_files(input_directory: str,
                      output_directory: str,
                      patient_identifier: str,
-                     encode_method: str = 'label',
+                     encode_method: str = 'label_encoding',
                      scale_method: str = 'standardize',
                      row_threshold: float = 0.3,
                      column_threshold: float = 0.5,

@@ -241,10 +241,36 @@ namespace Bridge.ModelOPS_Connection
             }
         }
 
-        [HttpGet("Results/Graphics/{label}")]
-        public async Task<IActionResult> GetGeneratedGraphics(string label)
+        [HttpGet("Results/Graphics/{label}/{start}:{count}")]
+        public async Task<IActionResult> GetGeneratedGraphics(string label, int start, int count)
         {
-            return BadRequest();
+            string userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            string bucketName = "thesis-results";
+            string prefix = $"{userId}/{label}/graphics/";
+
+            try
+            {
+                var images = await minioService.GetImagesAsync(bucketName, prefix, start, count);
+
+                if (images != null && images.Count > 0)
+                {
+                    return Ok(images);
+                }
+                else
+                {
+                    return NotFound("No images found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving images: {ex.Message}");
+                return StatusCode(500, "Internal server error while retrieving images.");
+            }
         }
 
         private string GetUserIdFromToken()

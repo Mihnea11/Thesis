@@ -34,7 +34,7 @@ def merge_files(directory_path: str, save_directory: str, threshold: int = 85):
     :param save_directory: Directory where merged files will be saved.
     :param threshold: Similarity threshold for considering filenames as a match.
     """
-    file_names = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
+    file_names = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f)) and f.endswith('.csv')]
     similar_groups = find_similar_files(file_names, threshold)
 
     os.makedirs(save_directory, exist_ok=True)

@@ -33,27 +33,45 @@
     </div>
 
     <div *ngIf="errorOccurred" class="error-container">
-        <div class="error-card">
-            <button class="close-button" (click)="errorOccurred = false">&times;</button>
-            <p>{{ errorMessage }}</p>
-            <button *ngIf="activeIcon === 'features'" (click)="loadFeatures()">Try Again</button>
-        </div>
+      <div class="error-card">
+          <button class="close-button" (click)="errorOccurred = false">&times;</button>
+          <p>{{ errorMessage }}</p>
+          <button *ngIf="activeIcon === 'features'" (click)="loadFeatures()">Try Again</button>
+          <button *ngIf="activeIcon === 'graphs'" (click)="loadGraphs()">Try Again</button>
+      </div>
     </div>
     
     <div *ngIf="features && activeIcon === 'features' && !errorOccurred && !showLoadingSpinner" class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Importance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let feature of features">
-              <td>{{ feature.name }}</td>
-              <td>{{ feature.importance | number:'1.0-3' }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Importance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let feature of features">
+            <td>{{ feature.name }}</td>
+            <td>{{ feature.importance | number:'1.0-3' }}%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="accuracy" class="accuracy-display">
+        <h3>Model Accuracy: {{ accuracy }}</h3>
+      </div>
+    </div>
+
+    <div *ngIf="activeIcon === 'graphs' && !errorOccurred && !showLoadingSpinner" class="image-gallery">
+      <div class="custom-viewport" #scrollViewport (scroll)="onScroll()">
+        <div *ngFor="let image of images" class="image-container" (click)="openFullscreen(image)">
+          <img [src]="'data:image/jpeg;base64,' + image" alt="Generated Graphic">
+        </div>
+      </div>
+      <div *ngIf="hasMore && nearBottom" class="loading">Loading...</div>
+      <div *ngIf="!hasMore && images.length === 0" class="no-images">No images found.</div>
+    </div>
+    
+    <div class="fullscreen-overlay" [class.active]="fullscreenImage" (click)="closeFullscreen()">
+      <img *ngIf="fullscreenImage" [src]="'data:image/jpeg;base64,' + fullscreenImage" alt="Fullscreen Image">
     </div>
 </div>

@@ -129,5 +129,45 @@ namespace Bridge.Services
                 throw new ApplicationException("Unable to retrieve or parse the file.", e);
             }
         }
+
+        public async Task<List<string>> GetImagesAsync(string bucketName, string prefix, int start, int count)
+        {
+            var images = new List<string>();
+
+            try
+            {
+                var listObjectArgs = new ListObjectsArgs().WithBucket(bucketName)
+                                                          .WithPrefix(prefix)
+                                                          .WithRecursive(false);
+
+                var objects = await minioClient.ListObjectsAsync(listObjectArgs).ToList();
+                var filteredObjects = objects.Skip(start).Take(count);
+
+                foreach (var obj in filteredObjects)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        var getObjectArgs = new GetObjectArgs()
+                            .WithBucket(bucketName)
+                            .WithObject(obj.Key)
+                            .WithCallbackStream(stream =>
+                            {
+                                stream.CopyTo(ms);
+                            });
+
+                        await minioClient.GetObjectAsync(getObjectArgs).ConfigureAwait(false);
+
+                        var base64Image = Convert.ToBase64String(ms.ToArray());
+                        images.Add(base64Image);
+                    }
+                }
+            }
+            catch (MinioException e)
+            {
+                Console.WriteLine($"Error occurred: {e}");
+            }
+
+            return images;
+        }
     }
 }
