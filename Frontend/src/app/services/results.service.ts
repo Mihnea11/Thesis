@@ -17,4 +17,8 @@ export class ResultsService {
   getGeneratedGraphics(label: string, start: number, count: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.baseUrl}/Graphics/${label}/${start}:${count}`);
   }
+
+  getGeneratedStats(label: string, start: number, count: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/Stats/${label}/${start}:${count}`);
+  }
 }

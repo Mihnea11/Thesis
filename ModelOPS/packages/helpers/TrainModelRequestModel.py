@@ -9,5 +9,6 @@ class TrainModelRequest(BaseModel):
     chunk_size: int
     bucket_name: str
     excluded_columns: list
+    patient_identifier: str
     label: str
     user_id: str

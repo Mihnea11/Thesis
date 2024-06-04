@@ -30,6 +30,9 @@ namespace Bridge.ModelOPS_Connection.Models
 
         [JsonPropertyName("excluded_columns")]
         public List<string> ExcludedColumns { get; set; }
+        [JsonPropertyName("patient_identifier")]
+        public string PatientIdentifier { get; set; }
+
 
         public TrainModelRequestModel()
         {
@@ -42,6 +45,7 @@ namespace Bridge.ModelOPS_Connection.Models
             RandomState = 0;
             ChunkSize = 0;
             ExcludedColumns = new List<string>();
+            PatientIdentifier = string.Empty;
         }
     }
 }

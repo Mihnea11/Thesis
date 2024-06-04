@@ -234,7 +234,8 @@ export class ModelConfigurationComponent {
               excluded_columns: this.excludedTrainingColumnsArray,
               bucketName: "",
               label: this.selectedLabel,
-              userId: ""
+              userId: "",
+              patient_identifier: this.patientIdentifier
             };
   
             return this.modelOpsService.trainModel(sessionId, trainModelRequest);

@@ -59,6 +59,8 @@ def train_random_forest_model(combined_data: pd.DataFrame, target_column: str, f
     importances_percentage = 100 * importances / importances.sum()
     feature_importances_df = pd.DataFrame({'Feature': features, 'Importance (%)': importances_percentage})
 
+    feature_importances_df = feature_importances_df.sort_values(by='Importance (%)', ascending=False)
+
     predictions = model.predict(test_data[features])
     accuracy = accuracy_score(test_data[target_column], predictions)
 
@@ -133,8 +135,10 @@ def apply_shap_explanations(model, test_data: pd.DataFrame, features: List[str],
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(filtered_test_data)
 
-    if isinstance(shap_values, np.ndarray):
+    if isinstance(shap_values, np.ndarray) and len(shap_values.shape) == 3:
         mean_abs_shap_values = np.mean(np.abs(shap_values), axis=(0, 2))
+
+        shap_values_mean = np.mean(shap_values, axis=2)
 
         plt.figure()
         plt.bar(features, mean_abs_shap_values)
@@ -146,9 +150,19 @@ def apply_shap_explanations(model, test_data: pd.DataFrame, features: List[str],
         plt.savefig(os.path.join(output_dir, 'consolidated_shap_summary_plot.png'))
         plt.close()
 
+        shap.summary_plot(shap_values_mean, filtered_test_data, feature_names=features, show=False, plot_size=(20, 15))
+        plt.savefig(os.path.join(output_dir, 'shap_summary_dot_plot.png'))
+        plt.close()
+
+        shap.summary_plot(shap_values_mean, filtered_test_data, plot_type="bar", feature_names=features, show=False, plot_size=(20, 15))
+        plt.savefig(os.path.join(output_dir, 'shap_summary_bar_plot.png'))
+        plt.close()
+
         instance_index = 0
         shap_values_instance = np.mean(shap_values[instance_index, :, :], axis=1)
-        shap.force_plot(explainer.expected_value[0], shap_values_instance, features=filtered_test_data.iloc[instance_index, :], show=False, matplotlib=True)
+        shap.force_plot(explainer.expected_value[0], shap_values_instance,
+                        features=filtered_test_data.iloc[instance_index, :], show=False, matplotlib=True,
+                        figsize=(40, 10))
         plt.savefig(os.path.join(output_dir, 'force_plot_instance.png'))
         plt.close()
     else:
@@ -184,11 +198,11 @@ def run(data_dir: str,
     print("Data loaded and processed.")
 
     print("Evaluating feature significance using Kruskal-Wallis test...")
-    #significant_features = perform_kruskal_wallis_test(combined_data, target_column, p_value_threshold)
-    significant_features = []
-    for col in combined_data.columns:
-        if col != target_column:
-            significant_features.append(col)
+    significant_features = perform_kruskal_wallis_test(combined_data, target_column, p_value_threshold)
+    #significant_features = []
+    #for col in combined_data.columns:
+        #if col != target_column:
+            #significant_features.append(col)
     print(f"Significant features found: {len(significant_features)} - {significant_features}")
 
     if significant_features:
@@ -198,7 +212,7 @@ def run(data_dir: str,
         print("Feature importances and model accuracy saved.")
 
         print("Creating violin plots for significant features...")
-        #create_violin_plots(combined_data, target_column, significant_features, output_dir)
+        create_violin_plots(combined_data, target_column, significant_features, output_dir)
         print("Violin plots saved.")
 
         print("Applying SHAP for model explanation...")

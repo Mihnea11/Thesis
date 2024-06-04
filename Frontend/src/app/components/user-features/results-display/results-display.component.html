@@ -38,6 +38,7 @@
           <p>{{ errorMessage }}</p>
           <button *ngIf="activeIcon === 'features'" (click)="loadFeatures()">Try Again</button>
           <button *ngIf="activeIcon === 'graphs'" (click)="loadGraphs()">Try Again</button>
+          <button *ngIf="activeIcon === 'stats'" (click)="loadStats()">Try Again</button>
       </div>
     </div>
     
@@ -62,13 +63,23 @@
     </div>
 
     <div *ngIf="activeIcon === 'graphs' && !errorOccurred && !showLoadingSpinner" class="image-gallery">
-      <div class="custom-viewport" #scrollViewport (scroll)="onScroll()">
-        <div *ngFor="let image of images" class="image-container" (click)="openFullscreen(image)">
+      <div class="custom-viewport" #scrollViewport (scroll)="onScroll('graphs')">
+        <div *ngFor="let image of graphs" class="image-container" (click)="openFullscreen(image)">
           <img [src]="'data:image/jpeg;base64,' + image" alt="Generated Graphic">
         </div>
       </div>
-      <div *ngIf="hasMore && nearBottom" class="loading">Loading...</div>
-      <div *ngIf="!hasMore && images.length === 0" class="no-images">No images found.</div>
+      <div *ngIf="hasMoreGraphs && nearBottom" class="loading">Loading...</div>
+      <div *ngIf="!hasMoreGraphs && graphs.length === 0" class="no-images">No images found.</div>
+    </div>
+
+    <div *ngIf="activeIcon === 'stats' && !errorOccurred && !showLoadingSpinner" class="image-gallery">
+      <div class="custom-viewport" #scrollViewport (scroll)="onScroll('stats')">
+        <div *ngFor="let image of stats" class="image-container" (click)="openFullscreen(image)">
+          <img [src]="'data:image/jpeg;base64,' + image" alt="Generated Graphic">
+        </div>
+      </div>
+      <div *ngIf="hasMoreStats && nearBottom" class="loading">Loading...</div>
+      <div *ngIf="!hasMoreStats && stats.length === 0" class="no-images">No images found.</div>
     </div>
     
     <div class="fullscreen-overlay" [class.active]="fullscreenImage" (click)="closeFullscreen()">

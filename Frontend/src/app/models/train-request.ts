@@ -8,4 +8,5 @@ export interface TrainRequest {
     bucketName: string;
     label: string;
     userId: string;
+    patient_identifier: string;
 }

@@ -16,7 +16,7 @@ export class AppShellComponent implements OnInit, AfterViewInit {
   @ViewChild('toolbar', { static: false }) toolbarElement!: ElementRef;
   @ViewChild('sidenav', { static: false }) sidenavElement!: ElementRef;
 
-  userInfo: UserInfo = {name: '', email: '', specialisationName: ''};
+  userInfo: UserInfo = {id: '', name: '', email: '', specialisationName: ''};
   menuOpened: boolean = false;
   hubConnection: HubConnection | undefined;
 
@@ -86,10 +86,6 @@ export class AppShellComponent implements OnInit, AfterViewInit {
             next: (response) => {
                 if (response.status === 200 && response.body) {
                     this.userInfo = response.body;
-                    console.log(response.body);
-                    console.log(this.userInfo.name);
-                    console.log(this.userInfo.email);
-                    console.log(this.userInfo.specialisationName);
                 } else {
                     this.refreshTokenAndCheckAgain();
                 }

@@ -26,6 +26,11 @@
             <input type="text" id="causalityColumn" required [(ngModel)]="causalityColumn" name="causalityColumn">
             <label for="causalityColumn" class="placeholder">Target Column</label>
         </div>
+
+        <div class="input-wrapper">
+            <input type="text" id="patientIdentifier" required [(ngModel)]="patientIdentifier" name="patientIdentifier">
+            <label for="patientIdentifier" class="placeholder">Patient Identifier Column</label>
+        </div>
     </div>
     
     <div *ngIf="showExpertSettings" class="section expert-settings">
@@ -91,11 +96,6 @@
                 <li (click)="selectScaling('Standardize')">Standardize</li>
                 <li (click)="selectScaling('Min-Max')">Min-Max</li>
             </ul>
-        </div>
-
-        <div class="input-wrapper">
-            <input type="text" id="patientIdentifier" required [(ngModel)]="patientIdentifier" name="patientIdentifier">
-            <label for="patientIdentifier" class="placeholder">Patient Identifier Column</label>
         </div>
 
         <div class="input-wrapper">

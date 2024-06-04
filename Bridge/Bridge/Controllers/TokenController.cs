@@ -51,12 +51,14 @@ namespace Bridge.Controllers
                 var jwtToken = validatedToken as JwtSecurityToken;
                 if (jwtToken != null)
                 {
+                    var idClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
                     var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
                     var emailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email)?.Value;
                     var specialisationClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "Specialisation")?.Value;
 
                     UserInfo userInfo = new UserInfo
                     {
+                        Id = idClaim,
                         Name = usernameClaim,
                         Email = emailClaim,
                         SpecialisationName = specialisationClaim

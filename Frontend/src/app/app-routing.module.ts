@@ -13,12 +13,12 @@ import { ResultsDisplayComponent } from './components/user-features/results-disp
 const routes: Routes = [
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [tokenGuard]},
   {
     path: '', 
     component: AppShellComponent,
     canActivate: [tokenGuard],
     children: [
+      { path: 'profile', component: ProfileComponent},
       { path: 'home', component: HomeComponent },
       { path: 'upload-data', component: UploadDataComponent},
       { path: 'configure-model', component: ModelConfigurationComponent},

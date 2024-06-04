@@ -25,10 +25,15 @@ export class ResultsDisplayComponent implements OnInit {
   errorOccurred: boolean = false;
   errorMessage: string = '';
 
-  images: string[] = [];
-  hasMore: boolean = true;
+  graphs: string[] = [];
+  hasMoreGraphs: boolean = true;
+  startGraph: number = 0;
+
+  stats: string[] = [];
+  hasMoreStats: boolean = true;
+  startStat: number = 0;
+
   nearBottom: boolean = false;
-  start: number = 0;
   count: number = 8;
 
   fullscreenImage: string | null = null;
@@ -75,8 +80,9 @@ export class ResultsDisplayComponent implements OnInit {
       this.loadFeatures();
     } else if (icon === 'graphs') {
       this.loadGraphs();
+    } else if (icon == 'stats') {
+      this.loadStats();
     }
-    // Handle other icons if needed
   }
 
   loadFeatures() {
@@ -109,38 +115,76 @@ export class ResultsDisplayComponent implements OnInit {
     }
   }
 
-  onScroll() {
+  onScroll(type: string) {
     const now = Date.now();
     if (now - this.lastScrollTime > this.throttleDuration) {
       this.lastScrollTime = now;
-      this.loadMoreImages();
+      
+      if (type == "graphs") {
+        this.loadMoreGraphs();
+      }
+      else if (type == 'stats') {
+        this.loadMoreStats()
+      }
     }
   }
 
   loadGraphs() {
-    this.images = [];
-    this.hasMore = true;
-    this.start = 0;
+    this.graphs = [];
+    this.hasMoreGraphs = true;
+    this.startGraph = 0;
     this.showLoadingSpinner = true;
     this.errorOccurred = false;
 
-    this.loadMoreImages();
+    this.loadMoreGraphs();
   }
 
-  loadMoreImages(): void {
-    if (this.hasMore && this.selectedLabel) {
-      this.resultsService.getGeneratedGraphics(this.selectedLabel, this.start, this.count).subscribe({
+  loadStats() {
+    this.stats = [];
+    this.hasMoreStats = true;
+    this.startStat = 0;
+    this.showLoadingSpinner = true;
+    this.errorOccurred = false;
+
+    this.loadMoreStats();
+  }
+
+  loadMoreGraphs(): void {
+    if (this.hasMoreGraphs && this.selectedLabel) {
+      this.resultsService.getGeneratedGraphics(this.selectedLabel, this.startGraph, this.count).subscribe({
         next: (newImages) => {
-          this.images = [...this.images, ...newImages];
-          this.start += this.count;
+          this.graphs = [...this.graphs, ...newImages];
+          this.startGraph += this.count;
           if (newImages.length < this.count) {
-            this.hasMore = false;
+            this.hasMoreGraphs = false;
           }
           this.showLoadingSpinner = false;
         },
         error: (error) => {
           console.error('Error fetching images:', error);
-          this.hasMore = false;
+          this.hasMoreGraphs = false;
+          this.showLoadingSpinner = false;
+          this.errorOccurred = true;
+          this.errorMessage = "Failed to load your images. Please try again.";
+        }
+      });
+    }
+  }
+
+  loadMoreStats(): void {
+    if (this.hasMoreStats && this.selectedLabel) {
+      this.resultsService.getGeneratedStats(this.selectedLabel, this.startStat, this.count).subscribe({
+        next: (newImages) => {
+          this.stats = [...this.stats, ...newImages];
+          this.startStat += this.count;
+          if (newImages.length < this.count) {
+            this.hasMoreStats = false;
+          }
+          this.showLoadingSpinner = false;
+        },
+        error: (error) => {
+          console.error('Error fetching images:', error);
+          this.hasMoreStats = false;
           this.showLoadingSpinner = false;
           this.errorOccurred = true;
           this.errorMessage = "Failed to load your images. Please try again.";

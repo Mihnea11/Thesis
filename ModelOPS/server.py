@@ -3,12 +3,13 @@ import os.path
 import shutil
 import tempfile
 from fastapi import FastAPI, HTTPException
+from packages.processing import random_forest
 from packages.minio_file_handler import client
+from packages.statistical_analysis import statistical_analysis
+from packages.preprocessing.preprocess_data import preprocess_files
 from packages.helpers.TrainModelRequestModel import TrainModelRequest
 from packages.helpers.FileDownloadRequestModel import FileDownloadRequest
 from packages.helpers.FileCleaningRequestModel import FileCleaningRequest
-from packages.preprocessing.preprocess_data import preprocess_files
-from packages.processing import random_forest
 
 app = FastAPI()
 minio_client = client.MinioClient()
@@ -63,6 +64,10 @@ async def train_model(request: TrainModelRequest):
                           request.random_state,
                           request.chunk_size,
                           request.excluded_columns)
+        statistical_analysis.analyze(request.input_path,
+                                     temporary_directory,
+                                     request.target_column,
+                                     request.patient_identifier)
         minio_client.upload_directory(request.bucket_name, request.user_id, request.label, temporary_directory)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
