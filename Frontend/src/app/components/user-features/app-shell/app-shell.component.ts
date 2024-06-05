@@ -51,6 +51,10 @@ export class AppShellComponent implements OnInit, AfterViewInit {
     this.router.navigate(['profile']);
   }
 
+  settings() {
+    this.router.navigate(['settings']);
+  }
+
   navigate(path: string) {
     this.router.navigate([path]);
   }

@@ -4,6 +4,10 @@
 
 body {
   font-family: Arial, sans-serif;
+  background: rgba(35, 35, 35, 0.9);
+  color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 0;
 }
 
 .profile-container {
@@ -15,28 +19,33 @@ body {
 }
 
 .profile-card {
-  background: #333;
-  border-radius: 0.75rem;
-  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2);
+  background: rgba(44, 44, 44, 0.8);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
   overflow: hidden;
   max-width: 100%;
-  width: 400px;
+  width: 40rem;
   padding: 2rem;
   text-align: center;
-  color: #fff;
+  height: 25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeIn 1s ease-in-out;
 
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 5rem;
 
     .left-avatar, .right-avatar {
       background-size: cover;
       background-position: center;
-      width: 50px;
-      height: 50px;
+      width: 4rem;
+      height: 4rem;
       border-radius: 50%;
+      transition: transform 0.3s;
     }
 
     .left-avatar {
@@ -47,11 +56,22 @@ body {
       background-image: url('../../../../assets/images/FemaleDoctor.png');
     }
 
-    .card-title {
-      font-size: 1.5rem;
-      color: #0a84ff;
-      margin: 0;
+    .left-avatar:hover, .right-avatar:hover {
+      transform: scale(1.1);
     }
+
+    .card-title {
+      font-size: 2rem;
+      color: rgb(10, 132, 255);
+      margin: 0;
+      animation: slideIn 0.5s ease-in-out;
+    }
+  }
+
+  .card-id {
+    margin-bottom: 5rem;
+    font-size: 1.5rem;
+    color: rgb(255, 255, 255);
   }
 
   .card-content {
@@ -60,15 +80,117 @@ body {
     .info-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
 
       .info-label {
+        font-size: 1.25rem;
         font-weight: bold;
-        color: #999;
+        color: rgb(10, 132, 255);
       }
 
       .info-value {
-        color: #fff;
+        font-size: 1.25rem;
+        color: rgb(255, 255, 255);
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-0.625rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 48rem) {
+  .profile-container {
+    padding: 1.5rem;
+  }
+
+  .profile-card {
+    width: 90%;
+    padding: 1.5rem;
+    height: auto;
+
+    .card-header {
+      margin-bottom: 3rem;
+
+      .left-avatar, .right-avatar {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      .card-title {
+        font-size: 1.75rem;
+      }
+    }
+
+    .card-id {
+      margin-bottom: 3rem;
+      font-size: 1.25rem;
+    }
+
+    .card-content {
+      .info-row {
+        margin-bottom: 1rem;
+
+        .info-label, .info-value {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 30rem) {
+  .profile-container {
+    padding: 1rem;
+  }
+
+  .profile-card {
+    width: 100%;
+    padding: 1rem;
+    height: auto;
+
+    .card-header {
+      margin-bottom: 2rem;
+
+      .left-avatar, .right-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    .card-id {
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .card-content {
+      .info-row {
+        margin-bottom: 0.75rem;
+
+        .info-label, .info-value {
+          font-size: 0.875rem;
+        }
       }
     }
   }

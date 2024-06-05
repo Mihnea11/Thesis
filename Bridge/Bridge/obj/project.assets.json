@@ -2014,24 +2014,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\z004nwxe\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\mihne\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
+      "projectUniqueName": "D:\\Thesis\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
       "projectName": "Bridge",
-      "projectPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
-      "packagesPath": "C:\\Users\\z004nwxe\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\Thesis\\Bridge\\Bridge\\obj\\",
+      "projectPath": "D:\\Thesis\\Thesis\\Bridge\\Bridge\\Bridge.csproj",
+      "packagesPath": "C:\\Users\\mihne\\.nuget\\packages\\",
+      "outputPath": "D:\\Thesis\\Thesis\\Bridge\\Bridge\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\z004nwxe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\mihne\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -2039,7 +2034,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2098,8 +2092,20 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.IdentityModel.Tokens.Jwt' 7.0.3 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-59j7-ghrg-fj52",
+      "libraryId": "System.IdentityModel.Tokens.Jwt",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }

@@ -9,6 +9,7 @@ import { SignInComponent } from './components/user-authentication/sign-in/sign-i
 import { SignUpComponent } from './components/user-authentication/sign-up/sign-up.component';
 import { ModelConfigurationComponent } from './components/user-features/model-configuration/model-configuration.component';
 import { ResultsDisplayComponent } from './components/user-features/results-display/results-display.component';
+import { SettingsComponent } from './components/user-features/settings/settings.component';
 
 const routes: Routes = [
   { path: 'sign-in', component: SignInComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
     canActivate: [tokenGuard],
     children: [
       { path: 'profile', component: ProfileComponent},
+      { path: 'settings', component: SettingsComponent},
       { path: 'home', component: HomeComponent },
       { path: 'upload-data', component: UploadDataComponent},
       { path: 'configure-model', component: ModelConfigurationComponent},
@@ -28,7 +30,6 @@ const routes: Routes = [
   },
   { path: '**', redirectTo: 'authentication' }
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -14,6 +14,24 @@ export class FileService {
     return this.http.get<string[]>(`${this.apiUrl}/Labels`);
   }
 
+  listFiles(label: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/Files`, {
+      params: { label }
+    });
+  }
+
+  deleteFileByName(label: string, fileName: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/File`, {
+      params: { label, fileName }
+    });
+  }
+
+  deleteLabelDirectory(label: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/Label`, {
+      params: { label }
+    });
+  }
+
   startUploadSession(totalFiles: number): Observable<any> {
     const body = { TotalFiles: totalFiles };
     return this.http.post(`${this.apiUrl}/StartUpload`, body);

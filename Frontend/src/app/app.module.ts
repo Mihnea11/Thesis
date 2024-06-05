@@ -33,6 +33,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ModelConfigurationComponent } from './components/user-features/model-configuration/model-configuration.component';
 import { ResultsDisplayComponent } from './components/user-features/results-display/results-display.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { SettingsComponent } from './components/user-features/settings/settings.component';
+import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     UploadDataComponent,
     ProfileComponent,
     ModelConfigurationComponent,
-    ResultsDisplayComponent
+    ResultsDisplayComponent,
+    SettingsComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [
     FormsModule,

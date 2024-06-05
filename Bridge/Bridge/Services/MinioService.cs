@@ -58,6 +58,72 @@ namespace Bridge.Services
             }
         }
 
+        public async Task<List<string>> ListFilesByLabelAsync(string bucketName, string userId, string label)
+        {
+            var files = new List<string>();
+            var prefix = $"{userId}/{label}/";
+
+            try
+            {
+                var listObjectsArgs = new ListObjectsArgs().WithBucket(bucketName)
+                                                           .WithPrefix(prefix)
+                                                           .WithRecursive(true);
+
+                var items = await minioClient.ListObjectsAsync(listObjectsArgs).ToList();
+                files.AddRange(items.Select(item => item.Key));
+
+                return files;
+            }
+            catch (MinioException e)
+            {
+                Console.Write($"Error occurred: {e}");
+                return files;
+            }
+        }
+
+        public async Task<bool> RemoveFileByNameAsync(string bucketName, string userId, string label, string fileName)
+        {
+            var objectName = $"{userId}/{label}/{fileName}";
+            try
+            {
+                var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName)
+                                                             .WithObject(objectName);
+                await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
+                return true;
+            }
+            catch (MinioException e)
+            {
+                Console.Write($"Error occurred: {e}");
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveLabelDirectoryAsync(string bucketName, string userId, string label)
+        {
+            var prefix = $"{userId}/{label}/";
+            try
+            {
+                var listObjectsArgs = new ListObjectsArgs().WithBucket(bucketName)
+                                                           .WithPrefix(prefix)
+                                                           .WithRecursive(true);
+
+                var objects = await minioClient.ListObjectsAsync(listObjectsArgs).ToList();
+
+                foreach (var obj in objects)
+                {
+                    var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName)
+                                                                 .WithObject(obj.Key);
+                    await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
+                }
+                return true;
+            }
+            catch (MinioException e)
+            {
+                Console.Write($"Error occurred: {e}");
+                return false;
+            }
+        }
+
         public async Task<bool> UploadFileAsync(string bucketName, string objectName, string filePath)
         {
             try

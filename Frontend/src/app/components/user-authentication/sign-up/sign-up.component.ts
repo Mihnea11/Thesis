@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Specialisation } from 'src/app/models/specialisation';
 import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/services/authentication.service';
@@ -34,7 +35,8 @@ export class SignUpComponent {
   isLoading: boolean = false;
 
   constructor(private authenticationService: AuthenticationService,
-              private specialisationService: SpecialisationService) {
+              private specialisationService: SpecialisationService,
+              private router: Router) {
     this.getAllSpecialisations();
   }
 
@@ -60,6 +62,8 @@ export class SignUpComponent {
           this.isLoading = false;
           this.hasSuccess = true;
           this.successMessage = response.message;
+
+          this.router.navigate(['/sign-in']);
         },
         error: (error: HttpErrorResponse) => {
           this.isLoading = false;

@@ -1,0 +1,10 @@
+<div class="confirmation-dialog" *ngIf="visible">
+    <div class="dialog-content">
+      <h3>{{ message }}</h3>
+      <div class="dialog-actions">
+        <button class="confirm-btn" (click)="confirm()">Confirm</button>
+        <button class="cancel-btn" (click)="cancel()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  

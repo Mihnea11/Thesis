@@ -1,0 +1,39 @@
+<div class="settings-container">
+  <div class="header-container">
+    <h2>Existing Labels</h2>
+    <button class="delete-all-btn" (click)="showDeleteAllConfirmation()">Delete All Labels</button>
+  </div>
+  <ul class="labels-list">
+    <li *ngFor="let label of labels" class="label-item">
+      <div class="label-header">
+        <span class="label-name">{{ label.name }}</span>
+        <button class="delete-label-btn" (click)="showDeleteLabelConfirmation(label)">Delete Label</button>
+        <button class="toggle-files-btn" (click)="toggleFiles(label)">
+          <span class="arrow" [ngClass]="{'expanded': label.showFiles}"></span>
+        </button>
+      </div>
+      <ul class="files-list" [ngClass]="{'expanded': label.showFiles}">
+        <li *ngFor="let file of label.files" class="file-item">
+          <span class="file-name">{{ file }}</span>
+          <button class="delete-file-btn" (click)="showDeleteFileConfirmation(label, file)">Delete File</button>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <div class="header-container">
+    <h2>Past Notifications</h2>
+    <button class="delete-all-btn" (click)="clearAllNotifications()">Clear All Notifications</button>
+  </div>
+  <ul class="notifications-list">
+    <li *ngFor="let notification of notifications" class="notification-item">
+      <div class="notification-content">
+        <span class="notification-message">{{ notification.message }}</span>
+        <span class="notification-date">{{ notification.timestamp | date: 'short' }}</span>
+        <button class="delete-notification-btn" (click)="deleteNotification(notification)">Delete</button>
+      </div>
+    </li>
+  </ul>
+  
+  <app-confirmation-dialog #confirmationDialog (onConfirm)="handleConfirm()" (onCancel)="handleCancel()"></app-confirmation-dialog>
+</div>

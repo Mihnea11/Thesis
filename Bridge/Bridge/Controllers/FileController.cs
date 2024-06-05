@@ -47,6 +47,80 @@ namespace Bridge.Controllers
             }
         }
 
+        [HttpGet("Files")]
+        public async Task<IActionResult> ListFiles([FromQuery] string label)
+        {
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("JWT token is invalid or missing.");
+            }
+
+            try
+            {
+                var files = await minioService.ListFilesByLabelAsync("thesis-data", userId, label);
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving files: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("File")]
+        public async Task<IActionResult> DeleteFileByName([FromQuery] string label, [FromQuery] string fileName)
+        {
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("JWT token is invalid or missing.");
+            }
+
+            try
+            {
+                var result = await minioService.RemoveFileByNameAsync("thesis-data", userId, label, fileName);
+                if (result)
+                {
+                    return Ok(new { message = "File deleted successfully." });
+                }
+                else
+                {
+                    return StatusCode(500, "Error deleting file.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting file: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("Label")]
+        public async Task<IActionResult> DeleteLabelDirectory([FromQuery] string label)
+        {
+            var userId = GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("JWT token is invalid or missing.");
+            }
+
+            try
+            {
+                var result = await minioService.RemoveLabelDirectoryAsync("thesis-data", userId, label);
+                if (result)
+                {
+                    return Ok(new { message = "Label directory deleted successfully." });
+                }
+                else
+                {
+                    return StatusCode(500, "Error deleting label directory.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting label directory: {ex.Message}");
+            }
+        }
+
         [HttpPost("StartUpload")]
         public IActionResult StartUploadSession([FromBody] UploadSessionInitModel initModel)
         {
