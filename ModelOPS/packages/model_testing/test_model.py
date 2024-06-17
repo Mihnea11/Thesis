@@ -15,7 +15,7 @@ def test_model():
     generate_artificial_dataset(data_directory)
 
     preprocess_data.preprocess_files(data_directory, output_directory=clean_directory, patient_identifier="", exclude_columns=["Disease_Outcome", 'Age'])
-    lightGBM.run(clean_directory, results_directory, 'Disease_Outcome')
+    random_forest.run(clean_directory, data_directory, results_directory, 'Disease_Outcome')
 
 
 test_model()

@@ -85,35 +85,37 @@ def save_results(directory: str, filename: str, data: pd.DataFrame) -> None:
             file.write(f"{row['Feature']}:{row['Importance (%)']}\n")
 
 
-def create_violin_plots(data: pd.DataFrame, target_column: str, features: List[str], output_dir: str) -> None:
-    """
-    Creates and saves violin plots for each significant feature against the target variable, with added statistical annotations.
-
-    :param data: The dataset containing the features and target.
-    :param target_column: The target variable column name.
-    :param features: List of significant features to plot.
-    :param output_dir: Directory where the plots will be saved.
-    """
+def create_box_plots(data: pd.DataFrame, target_column: str, features: List[str], output_dir: str) -> None:
     plots_dir = os.path.join(output_dir, 'graphics')
     os.makedirs(plots_dir, exist_ok=True)
+
+    if not pd.api.types.is_numeric_dtype(data[target_column]):
+        data[target_column] = data[target_column].astype(str)
+
     for feature in features:
         plt.figure(figsize=(12, 8))
-        sns.violinplot(x=target_column, y=feature, data=data, inner=None)
-        sns.swarmplot(x=target_column, y=feature, data=data, color='k', alpha=0.5)  # Adds swarmplot to show actual data points
+        if pd.api.types.is_numeric_dtype(data[feature]):
+            sns.boxplot(x=target_column, y=feature, data=data)
 
-        grouped = data.groupby(target_column)[feature]
-        means = grouped.mean()
-        stds = grouped.std()
-        counts = grouped.count()
+            sns.stripplot(x=target_column, y=feature, data=data, color='k', alpha=0.5, size=3)  # Smaller markers
 
-        for i, (mean, std, count) in enumerate(zip(means, stds, counts)):
-            plt.text(i, data[feature].max(), f'Mean: {mean:.2f}\nSD: {std:.2f}\nCount: {count}',
-                     color='red', ha='center', va='top')
+            grouped = data.groupby(target_column)[feature]
+            means = grouped.mean()
+            stds = grouped.std()
+            counts = grouped.count()
 
-        plt.title(f'Violin Plot for {feature} by {target_column}')
-        plt.xlabel('Disease Stage')
-        plt.ylabel(f'{feature} Measurement')
-        plt.savefig(os.path.join(plots_dir, f'violin_plot_{feature}.png'))
+            for i, (mean, std, count) in enumerate(zip(means, stds, counts)):
+                plt.text(i, data[feature].max(), f'Mean: {mean:.2f}\nSD: {std:.2f}\nCount: {count}',
+                         color='red', ha='center', va='top')
+
+            plt.ylabel(f'{feature} Measurement')
+        else:
+            sns.countplot(x=target_column, hue=feature, data=data)
+            plt.ylabel('Count')
+
+        plt.title(f'{feature} by {target_column}')
+        plt.xlabel(target_column)
+        plt.savefig(os.path.join(plots_dir, f'plot_{feature}.png'))
         plt.close()
 
 
@@ -170,6 +172,7 @@ def apply_shap_explanations(model, test_data: pd.DataFrame, features: List[str],
 
 
 def run(data_dir: str,
+        default_data_path: str,
         output_dir: str,
         target_column: str,
         max_depth: int = 15,
@@ -189,31 +192,43 @@ def run(data_dir: str,
     """
     print("Starting data processing...")
     data_files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith('.csv')]
+    default_data_files = [os.path.join(default_data_path, f) for f in os.listdir(default_data_path) if
+                          f.endswith('.csv')]
     data_frames = [pd.read_csv(f) for f in data_files]
+    default_data_frames = [pd.read_csv(f) for f in default_data_files]
+
     combined_data = pd.concat(data_frames, ignore_index=True)
     combined_data[target_column].fillna(0, inplace=True)
 
+    default_data = pd.concat(default_data_frames, ignore_index=True)
+    default_data[target_column].fillna(0, inplace=True)
+
     if excluded_columns:
         combined_data = combined_data.drop(columns=excluded_columns, errors='ignore')
+        default_data = default_data.drop(columns=excluded_columns, errors='ignore')
     print("Data loaded and processed.")
 
     print("Evaluating feature significance using Kruskal-Wallis test...")
-    significant_features = perform_kruskal_wallis_test(combined_data, target_column, p_value_threshold)
-    #significant_features = []
-    #for col in combined_data.columns:
-        #if col != target_column:
-            #significant_features.append(col)
+    if len(combined_data.columns) > 30:
+        significant_features = perform_kruskal_wallis_test(combined_data, target_column, p_value_threshold)
+    else:
+        significant_features = []
+        for col in combined_data.columns:
+            if col != target_column:
+                significant_features.append(col)
     print(f"Significant features found: {len(significant_features)} - {significant_features}")
 
     if significant_features:
         print("Training RandomForest model on significant features only...")
-        feature_importances_df, model, test_data = train_random_forest_model(combined_data, target_column, significant_features, max_depth, random_state)
+        feature_importances_df, model, test_data = train_random_forest_model(combined_data, target_column,
+                                                                             significant_features, max_depth,
+                                                                             random_state)
         save_results(output_dir, 'feature_importances.txt', feature_importances_df)
         print("Feature importances and model accuracy saved.")
 
-        print("Creating violin plots for significant features...")
-        create_violin_plots(combined_data, target_column, significant_features, output_dir)
-        print("Violin plots saved.")
+        print("Creating box plots for significant features...")
+        create_box_plots(default_data, target_column, significant_features, output_dir)
+        print("Box plots saved.")
 
         print("Applying SHAP for model explanation...")
         apply_shap_explanations(model, test_data, significant_features, output_dir)

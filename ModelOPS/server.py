@@ -50,7 +50,7 @@ async def clean_files(request: FileCleaningRequest):
                          request.row_threshold,
                          request.column_threshold,
                          request.excluded_columns)
-        return {"message": "Files cleaned successfully", "cleaned_files_path": output_path}
+        return {"message": "Files cleaned successfully", "cleaned_files_path": request.input_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -75,6 +75,7 @@ async def train_model(request: TrainModelRequest):
             input_path = default_directory
 
         random_forest.run(input_path,
+                          default_directory,
                           temporary_directory,
                           request.target_column,
                           request.max_depth,
