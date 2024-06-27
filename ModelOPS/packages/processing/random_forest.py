@@ -1,5 +1,6 @@
 import os
 import shap
+import joblib
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -190,6 +191,9 @@ def run(data_dir: str,
     :param p_value_threshold: Threshold for determining feature significance via Kruskal-Wallis test.
     :param excluded_columns: Optional list of column names to exclude from processing.
     """
+    model_dir = os.path.join(output_dir, "model")
+    model_path = os.path.join(model_dir, 'trained_random_forest_model.joblib')
+
     print("Starting data processing...")
     data_files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith('.csv')]
     default_data_files = [os.path.join(default_data_path, f) for f in os.listdir(default_data_path) if
@@ -219,10 +223,30 @@ def run(data_dir: str,
     print(f"Significant features found: {len(significant_features)} - {significant_features}")
 
     if significant_features:
-        print("Training RandomForest model on significant features only...")
-        feature_importances_df, model, test_data = train_random_forest_model(combined_data, target_column,
-                                                                             significant_features, max_depth,
-                                                                             random_state)
+        if os.path.exists(model_dir) and os.path.exists(model_path):
+            print(f"Loading existing model from {model_path}...")
+            model = joblib.load(model_path)
+            if hasattr(model, 'feature_importances_') and len(model.feature_importances_) == len(significant_features):
+                print("Incrementally training the existing model with new data...")
+                train_data, test_data = train_test_split(combined_data, test_size=0.2, random_state=random_state)
+                model.fit(train_data[significant_features], train_data[target_column])
+                importances_percentage = 100 * model.feature_importances_ / model.feature_importances_.sum()
+                feature_importances_df = pd.DataFrame(
+                    {'Feature': significant_features, 'Importance (%)': importances_percentage})
+            else:
+                print(
+                    "The loaded model's features do not match the current significant features. Retraining a new model...")
+                feature_importances_df, model, test_data = train_random_forest_model(combined_data, target_column,
+                                                                                     significant_features, max_depth,
+                                                                                     random_state)
+        else:
+            print("Training RandomForest model on significant features only...")
+            feature_importances_df, model, test_data = train_random_forest_model(combined_data, target_column,
+                                                                                 significant_features, max_depth,
+                                                                                 random_state)
+            os.makedirs(model_dir, exist_ok=True)
+
+        feature_importances_df = feature_importances_df.sort_values(by='Importance (%)', ascending=False)
         save_results(output_dir, 'feature_importances.txt', feature_importances_df)
         print("Feature importances and model accuracy saved.")
 

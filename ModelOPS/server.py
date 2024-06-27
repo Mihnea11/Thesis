@@ -58,6 +58,7 @@ async def clean_files(request: FileCleaningRequest):
 @app.post("/train_model")
 async def train_model(request: TrainModelRequest):
     temporary_directory = tempfile.mkdtemp()
+    minio_client.get_files_by_user_label(request.bucket_name, request.user_id, request.label, temporary_directory)
 
     try:
         if request.excluded_columns is None:
